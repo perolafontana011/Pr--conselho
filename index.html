@@ -4,89 +4,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Pré-Conselho Escolar</title>
+    <!-- Importando uma fonte moderna do Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --light: #f4f7f6;
-            --white: #ffffff;
-            --border: #ddd;
+            --primary: #4f46e5;       /* Roxo moderno */
+            --primary-hover: #4338ca;
+            --secondary: #0ea5e9;     /* Azul claro */
+            --success: #10b981;       /* Verde */
+            --danger: #ef4444;        /* Vermelho */
+            --background: #f3f4f6;    /* Cinza bem claro */
+            --surface: #ffffff;       /* Branco */
+            --text-main: #1f2937;     /* Cinza escuro */
+            --text-muted: #6b7280;    /* Cinza médio */
+            --border: #e5e7eb;        /* Borda suave */
+            --radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-        body { background-color: var(--light); color: #333; display: flex; justify-content: center; padding: 20px; min-height: 100vh; align-items: center; }
+        body { 
+            background-color: var(--background); 
+            color: var(--text-main); 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px 20px; 
+            min-height: 100vh; 
+            align-items: center; 
+        }
 
-        #app { width: 100%; max-width: 1000px; background: var(--white); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        #app { 
+            width: 100%; 
+            max-width: 1000px; 
+            background: var(--surface); 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow-lg); 
+            overflow: hidden; 
+            position: relative;
+        }
 
         /* Telas */
-        .screen { display: none; padding: 30px; }
+        .screen { display: none; padding: 40px; animation: fadeIn 0.3s ease; }
         .screen.active { display: block; }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Login */
-        #login-screen { text-align: center; max-width: 500px; margin: 0 auto; box-shadow: none; background: transparent; padding: 0;}
-        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .login-box h1 { margin-bottom: 20px; color: var(--primary); font-size: 1.5rem; }
+        #login-screen { max-width: 450px; margin: 0 auto; box-shadow: none; background: transparent; padding: 0;}
+        .login-box { 
+            background: var(--surface); 
+            padding: 40px; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow-lg); 
+            border: 1px solid var(--border);
+        }
+        .login-box h1 { margin-bottom: 30px; color: var(--text-main); font-size: 1.75rem; text-align: center; font-weight: 700; }
         
         /* Abas de Login */
-        .login-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--light); }
-        .login-tab { flex: 1; padding: 12px; cursor: pointer; font-weight: bold; color: #777; border-bottom: 3px solid transparent; transition: 0.3s; text-align: center; }
-        .login-tab:hover { color: var(--primary); }
-        .login-tab.active { color: var(--secondary); border-bottom: 3px solid var(--secondary); }
+        .login-tabs { display: flex; margin-bottom: 30px; background: var(--background); padding: 5px; border-radius: 8px; }
+        .login-tab { 
+            flex: 1; 
+            padding: 12px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            color: var(--text-muted); 
+            border-radius: 6px; 
+            transition: all 0.3s ease; 
+            text-align: center; 
+            font-size: 0.95rem;
+        }
+        .login-tab:hover { color: var(--text-main); }
+        .login-tab.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
 
         .login-form { display: none; text-align: left; }
-        .login-form.active { display: block; }
+        .login-form.active { display: block; animation: fadeIn 0.3s ease; }
 
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; }
-        .form-group textarea { resize: vertical; min-height: 80px; }
+        /* Formulários */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            transition: all 0.2s ease;
+            background: var(--surface);
+            color: var(--text-main);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
 
-        button { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .btn-primary { background: var(--secondary); color: white; width: 100%; }
-        .btn-primary:hover { background: #2980b9; }
+        /* Botões */
+        button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            transition: all 0.2s ease; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
         .btn-success { background: var(--success); color: white; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: #333; }
-        .btn-outline:hover { background: #eee; }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; width: auto; }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: var(--background); border-color: var(--text-muted); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; border-radius: 6px; }
 
         /* Header do Painel */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--light); padding-bottom: 15px; margin-bottom: 20px; }
-        .header h2 { color: var(--primary); }
-        .user-info { font-size: 0.9rem; color: #666; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid var(--border);
+        }
+        .header h2 { color: var(--text-main); font-size: 1.5rem; font-weight: 700; }
+        .user-info { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
 
         /* Menus de Abas */
-        .admin-controls, .prof-controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .admin-controls, .prof-controls { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
         .admin-controls button, .prof-controls button { flex: 1; min-width: 150px; }
-        .aba-ativa { background: var(--primary) !important; color: white !important; }
+        .aba-ativa { background: var(--primary) !important; color: white !important; box-shadow: var(--shadow-md); }
 
-        .section-box { background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .section-box h3 { margin-bottom: 15px; color: var(--primary); font-size: 1.1rem; }
+        /* Caixas de Seção */
+        .section-box { 
+            background: var(--background); 
+            padding: 25px; 
+            border-radius: var(--radius); 
+            margin-bottom: 25px; 
+            border: 1px solid var(--border); 
+        }
+        .section-box h3 { margin-bottom: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; }
 
         /* Lista de Perguntas Admin */
-        .pergunta-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; }
-        .pergunta-item span { flex: 1; font-size: 0.9rem; }
+        .pergunta-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--surface); 
+            padding: 15px 20px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            margin-bottom: 12px; 
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        .pergunta-item:hover { box-shadow: var(--shadow-md); border-color: var(--primary); }
+        .pergunta-item span { flex: 1; font-size: 0.95rem; color: var(--text-main); line-height: 1.4; }
         
         /* Área do Professor */
-        .pergunta-bloco { margin-bottom: 20px; background: white; padding: 15px; border-radius: 6px; border-left: 4px solid var(--secondary); }
-        .pergunta-bloco label { font-weight: bold; display: block; margin-bottom: 8px; color: var(--primary); }
+        .pergunta-bloco { 
+            margin-bottom: 25px; 
+            background: var(--surface); 
+            padding: 25px; 
+            border-radius: var(--radius); 
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary); 
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        .pergunta-bloco:hover { box-shadow: var(--shadow-md); }
+        .pergunta-bloco label { font-weight: 600; display: block; margin-bottom: 12px; color: var(--text-main); font-size: 1rem; line-height: 1.5; }
         
+        /* Mensagens */
         .hidden { display: none !important; }
-        .msg { padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; font-weight: bold; }
-        .msg-success { background: #d4edda; color: #155724; }
-        .msg-error { background: #f8d7da; color: #721c24; }
+        .msg { padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; animation: fadeIn 0.3s ease; }
+        .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        /* Impressão */
+        /* Impressão (Apenas Admin) */
         @media print {
             body { background: white; padding: 0; display: block; }
-            #app { box-shadow: none; max-width: 100%; }
+            #app { box-shadow: none; max-width: 100%; border-radius: 0; }
             .no-print { display: none !important; }
             .screen { padding: 0; }
-            .section-box { border: none; padding: 0; }
-            .pergunta-bloco { border-left: none; border-bottom: 1px solid #ccc; border-radius: 0; padding: 10px 0; }
+            .section-box { border: none; padding: 0; background: white; }
+            .pergunta-bloco { border-left: none; border-bottom: 1px solid #ccc; border-radius: 0; padding: 15px 0; box-shadow: none; }
+            .admin-controls { display: none !important; }
         }
     </style>
 </head>
@@ -116,7 +230,7 @@
                     <input type="password" id="admin-pass" placeholder="******">
                 </div>
                 <button class="btn-primary" onclick="fazerLogin('admin')">Entrar como Administrador</button>
-                <p style="margin-top:15px; font-size:0.8rem; color:#888; text-align:center;">Padrão: admin@escola.com / 123</p>
+                <p style="margin-top:20px; font-size:0.85rem; color:var(--text-muted); text-align:center;">Padrão: admin@escola.com / 123</p>
             </div>
 
             <!-- Formulário Professor -->
@@ -131,7 +245,7 @@
                     <input type="password" id="prof-pass" placeholder="******">
                 </div>
                 <button class="btn-primary" onclick="fazerLogin('professor')">Entrar como Professor</button>
-                <p style="margin-top:15px; font-size:0.8rem; color:#888; text-align:center;">Padrão: professor@escola.com / 123</p>
+                <p style="margin-top:20px; font-size:0.85rem; color:var(--text-muted); text-align:center;">Padrão: professor@escola.com / 123</p>
             </div>
         </div>
     </div>
@@ -139,14 +253,13 @@
     <!-- TELA DO PROFESSOR -->
     <div id="professor-screen" class="screen">
         <div class="header no-print">
-            <h2>Olá, <span id="prof-nome"></span> (Turma: <span id="prof-turma"></span>)</h2>
+            <h2>Olá, <span id="prof-nome"></span> <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">(Turma: <span id="prof-turma"></span>)</span></h2>
             <button class="btn-outline" onclick="logout()">Sair</button>
         </div>
         
         <div class="prof-controls no-print">
             <button id="btn-aba-responder" class="btn-primary" onclick="mostrarAbaProfessor('responder')">Responder Formulário</button>
             <button id="btn-aba-historico" class="btn-outline" onclick="mostrarAbaProfessor('historico')">Meu Histórico</button>
-            <button class="btn-success" onclick="window.print()">Imprimir / PDF</button>
         </div>
 
         <!-- Aba: Responder Formulário -->
@@ -154,7 +267,7 @@
             <div id="prof-msg" class="msg hidden no-print"></div>
             <form id="form-professor" onsubmit="salvarRespostas(event)">
                 <div id="perguntas-container"></div>
-                <button type="submit" class="btn-primary no-print" style="margin-top:20px;">Salvar Respostas</button>
+                <button type="submit" class="btn-primary no-print" style="margin-top:30px; max-width: 300px; margin-left: auto; margin-right: auto;">Salvar Respostas</button>
             </form>
         </div>
 
@@ -168,8 +281,8 @@
     <div id="admin-screen" class="screen">
         <div class="header no-print">
             <h2>Painel do Administrador</h2>
-            <div>
-                <span class="user-info" style="margin-right: 15px;">Logado como Admin</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="user-info">Logado como Admin</span>
                 <button class="btn-outline" onclick="logout()">Sair</button>
             </div>
         </div>
@@ -188,7 +301,7 @@
                 <div class="form-group">
                     <input type="text" id="nova-pergunta-texto" placeholder="Digite a pergunta aqui...">
                 </div>
-                <button class="btn-primary" onclick="adicionarPergunta()">Adicionar Pergunta</button>
+                <button class="btn-primary" style="max-width: 250px;" onclick="adicionarPergunta()">Adicionar Pergunta</button>
             </div>
             <div class="section-box">
                 <h3>Perguntas Ativas</h3>
@@ -222,7 +335,7 @@
                         <option value="9º Ano A">9º Ano A</option>
                     </select>
                 </div>
-                <button class="btn-success" onclick="cadastrarProfessor()">Cadastrar Professor</button>
+                <button class="btn-success" style="max-width: 250px;" onclick="cadastrarProfessor()">Cadastrar Professor</button>
             </div>
         </div>
 
@@ -230,7 +343,7 @@
         <div id="aba-ver-respostas" class="aba-admin-content hidden">
             <div class="section-box no-print">
                 <h3>Filtrar Respostas</h3>
-                <div class="form-group">
+                <div class="form-group" style="max-width: 300px;">
                     <label>Selecione a Turma:</label>
                     <select id="filtro-turma" onchange="renderizarRespostasAdmin()">
                         <option value="Todas">Todas as Turmas</option>
@@ -261,7 +374,7 @@
                 usuarios.push({ id: 1, nome: 'Administrador', email: 'admin@escola.com', senha: '123', tipo: 'admin' });
             }
             
-            // Garante que o Professor de teste existe (CORREÇÃO DO PROBLEMA)
+            // Garante que o Professor de teste existe
             if (!usuarios.find(u => u.email === 'professor@escola.com')) {
                 usuarios.push({ id: 2, nome: 'Prof. Exemplo', email: 'professor@escola.com', senha: '123', tipo: 'professor', turma: '6º Ano A' });
             }
@@ -426,7 +539,7 @@
         container.innerHTML = '';
 
         if (perguntas.length === 0) {
-            container.innerHTML = '<p>Nenhuma pergunta cadastrada.</p>';
+            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta cadastrada.</p>';
             return;
         }
 
@@ -475,7 +588,7 @@
         }
 
         if (respostasFiltradas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p>Nenhuma resposta enviada para esta turma ainda.</p></div>';
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta enviada para esta turma ainda.</p></div>';
             return;
         }
 
@@ -492,17 +605,17 @@
             const divBloco = document.createElement('div');
             divBloco.className = 'section-box';
             
-            let html = `<h3 style="border-bottom: 2px solid var(--secondary); padding-bottom: 5px;">Professor(a): ${listaRespostas[0].professorNome} | Turma: ${listaRespostas[0].turma}</h3>`;
-            html += `<p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">Data de envio: ${new Date(listaRespostas[0].data).toLocaleString()}</p>`;
+            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px;">Professor(a): ${listaRespostas[0].professorNome} | Turma: ${listaRespostas[0].turma}</h3>`;
+            html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Data de envio: ${new Date(listaRespostas[0].data).toLocaleString()}</p>`;
 
             listaRespostas.forEach(r => {
                 const perguntaObj = perguntas.find(p => p.id === r.perguntaId);
                 const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída: ${r.perguntaId}]`;
                 
                 html += `
-                    <div style="margin-bottom: 15px; background: white; padding: 10px; border-left: 3px solid var(--secondary);">
-                        <p style="font-weight: bold; color: var(--primary); font-size: 0.9rem;">${textoPergunta}</p>
-                        <p style="margin-top: 5px; font-size: 0.95rem;">${r.resposta || '<em>Não respondido</em>'}</p>
+                    <div style="margin-bottom: 20px; background: var(--surface); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
+                        <p style="font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 5px;">${textoPergunta}</p>
+                        <p style="font-size: 1rem; color: var(--text-main); line-height: 1.5;">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</p>
                     </div>
                 `;
             });
@@ -521,7 +634,7 @@
         document.getElementById('prof-msg').classList.add('hidden');
 
         if (perguntas.length === 0) {
-            container.innerHTML = '<p>Nenhuma pergunta disponível no momento.</p>';
+            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta disponível no momento.</p>';
             return;
         }
 
@@ -535,7 +648,7 @@
             div.className = 'pergunta-bloco';
             div.innerHTML = `
                 <label>${p.texto}</label>
-                <textarea id="resp-${p.id}" rows="3" placeholder="Digite sua resposta...">${valor}</textarea>
+                <textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>
             `;
             container.appendChild(div);
         });
@@ -579,7 +692,7 @@
         const minhasRespostas = respostas.filter(r => r.professorId === usuarioLogado.id);
 
         if (minhasRespostas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p>Você ainda não enviou nenhuma resposta.</p></div>';
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você ainda não enviou nenhuma resposta.</p></div>';
             return;
         }
 
@@ -591,32 +704,4 @@
         });
 
         container.innerHTML = '';
-        const datas = Object.keys(envios).sort((a, b) => new Date(b) - new Date(a));
-        const dataRecente = datas[0];
-        const respostasRecentes = envios[dataRecente];
-
-        const divBloco = document.createElement('div');
-        divBloco.className = 'section-box';
-        
-        let html = `<h3 style="border-bottom: 2px solid var(--secondary); padding-bottom: 5px;">Meu Último Envio (${dataRecente})</h3>`;
-        html += `<p style="font-size: 0.9rem; margin-bottom: 15px;">Turma: <strong>${usuarioLogado.turma}</strong></p>`;
-
-        respostasRecentes.forEach(r => {
-            const perguntaObj = perguntas.find(p => p.id === r.perguntaId);
-            const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída: ${r.perguntaId}]`;
-            
-            html += `
-                <div style="margin-bottom: 15px; background: white; padding: 10px; border-left: 3px solid var(--secondary);">
-                    <p style="font-weight: bold; color: var(--primary); font-size: 0.9rem;">${textoPergunta}</p>
-                    <p style="margin-top: 5px; font-size: 0.95rem;">${r.resposta || '<em>Não respondido</em>'}</p>
-                </div>
-            `;
-        });
-        
-        divBloco.innerHTML = html;
-        container.appendChild(divBloco);
-    }
-</script>
-
-</body>
-</html>
+        const datas = Object.keys(envios
