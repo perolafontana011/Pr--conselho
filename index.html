@@ -42,7 +42,6 @@
             border-radius: var(--radius); 
             box-shadow: var(--shadow-lg); 
             overflow: hidden; 
-            position: relative;
         }
 
         .screen { display: none; padding: 40px; animation: fadeIn 0.3s ease; }
@@ -53,7 +52,32 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Login */
+        /* Tela de Escolha de Perfil */
+        #escolha-screen { text-align: center; padding: 60px 40px; }
+        #escolha-screen h1 { color: var(--text-main); font-size: 2rem; margin-bottom: 10px; }
+        #escolha-screen p { color: var(--text-muted); margin-bottom: 40px; font-size: 1.1rem; }
+        
+        .botoes-perfil { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn-perfil { 
+            background: var(--surface); 
+            border: 2px solid var(--border); 
+            border-radius: var(--radius); 
+            padding: 40px 60px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            min-width: 250px;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-perfil:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .btn-perfil .icone { font-size: 3rem; }
+        .btn-perfil .titulo { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
+        .btn-perfil .desc { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* Tela de Login */
         #login-screen { max-width: 450px; margin: 0 auto; box-shadow: none; background: transparent; padding: 0;}
         .login-box { 
             background: var(--surface); 
@@ -62,26 +86,9 @@
             box-shadow: var(--shadow-lg); 
             border: 1px solid var(--border);
         }
-        .login-box h1 { margin-bottom: 30px; color: var(--text-main); font-size: 1.75rem; text-align: center; font-weight: 700; }
+        .login-box h1 { margin-bottom: 10px; color: var(--text-main); font-size: 1.5rem; text-align: center; font-weight: 700; }
+        .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
         
-        .login-tabs { display: flex; margin-bottom: 30px; background: var(--background); padding: 5px; border-radius: 8px; }
-        .login-tab { 
-            flex: 1; 
-            padding: 12px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            color: var(--text-muted); 
-            border-radius: 6px; 
-            transition: all 0.3s ease; 
-            text-align: center; 
-            font-size: 0.95rem;
-        }
-        .login-tab:hover { color: var(--text-main); }
-        .login-tab.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
-
-        .login-form { display: none; text-align: left; }
-        .login-form.active { display: block; animation: fadeIn 0.3s ease; }
-
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
         .form-group input, .form-group select, .form-group textarea { 
@@ -123,8 +130,9 @@
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { background: var(--background); border-color: var(--text-muted); }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; border-radius: 6px; }
+        .btn-voltar { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 0.9rem; padding: 0; }
+        .btn-voltar:hover { color: var(--primary); }
 
-        /* Botões de Teste Rápido */
         .test-buttons { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); display: flex; gap: 10px; }
         .test-buttons button { flex: 1; font-size: 0.8rem; padding: 8px; background: #f3f4f6; color: var(--text-main); border: 1px solid var(--border); }
         .test-buttons button:hover { background: #e5e7eb; }
@@ -200,52 +208,49 @@
 <body>
 
 <div id="app">
-    <!-- TELA DE LOGIN -->
-    <div id="login-screen" class="screen active">
-        <div class="login-box">
-            <h1>Pré-Conselho Escolar</h1>
+    <!-- TELA 1: ESCOLHA DE PERFIL (NOVO!) -->
+    <div id="escolha-screen" class="screen active">
+        <h1>Pré-Conselho Escolar</h1>
+        <p>Selecione o seu perfil para continuar</p>
+        
+        <div class="botoes-perfil">
+            <div class="btn-perfil" onclick="irParaLogin('admin')">
+                <div class="icone">👨‍💼</div>
+                <div class="titulo">Administrador</div>
+                <div class="desc">Gerenciar perguntas, professores e respostas</div>
+            </div>
             
-            <div class="login-tabs">
-                <div class="login-tab active" onclick="mudarAbaLogin('admin')">Sou Administrador</div>
-                <div class="login-tab" onclick="mudarAbaLogin('professor')">Sou Professor</div>
+            <div class="btn-perfil" onclick="irParaLogin('professor')">
+                <div class="icone">👩‍🏫</div>
+                <div class="titulo">Professor</div>
+                <div class="desc">Responder ao formulário do conselho de classe</div>
             </div>
+        </div>
+    </div>
 
-            <!-- Formulário Admin -->
-            <div id="form-login-admin" class="login-form active">
-                <div id="login-msg-admin" class="msg hidden"></div>
-                <div class="form-group">
-                    <label>E-mail do Administrador</label>
-                    <input type="email" id="admin-user" placeholder="admin@escola.com">
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="admin-pass" placeholder="******">
-                </div>
-                <button class="btn-primary" onclick="fazerLogin('admin')">Entrar como Administrador</button>
-                
-                <!-- Botão de Teste Rápido para Admin -->
-                <div class="test-buttons">
-                    <button type="button" onclick="preencherTeste('admin')">Preencher Admin Automaticamente</button>
-                </div>
+    <!-- TELA 2: LOGIN -->
+    <div id="login-screen" class="screen">
+        <div class="login-box">
+            <button class="btn-voltar" onclick="voltarParaEscolha()">← Voltar para escolha de perfil</button>
+            
+            <h1 id="login-titulo">Login</h1>
+            <p class="subtitulo" id="login-subtitulo">Entre com suas credenciais</p>
+            
+            <div id="login-msg" class="msg hidden"></div>
+
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="login-user" placeholder="seu@email.com">
             </div>
-
-            <!-- Formulário Professor -->
-            <div id="form-login-professor" class="login-form">
-                <div id="login-msg-prof" class="msg hidden"></div>
-                <div class="form-group">
-                    <label>E-mail do Professor</label>
-                    <input type="email" id="prof-user" placeholder="professor@escola.com">
-                </div>
-                <div class="form-group">
-                    <label>Senha</label>
-                    <input type="password" id="prof-pass" placeholder="******">
-                </div>
-                <button class="btn-primary" onclick="fazerLogin('professor')">Entrar como Professor</button>
-                
-                <!-- Botão de Teste Rápido para Professor -->
-                <div class="test-buttons">
-                    <button type="button" onclick="preencherTeste('professor')">Preencher Professor Automaticamente</button>
-                </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="login-pass" placeholder="******">
+            </div>
+            
+            <button class="btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
+            
+            <div class="test-buttons">
+                <button type="button" onclick="preencherTeste()">Preencher Automaticamente</button>
             </div>
         </div>
     </div>
@@ -356,104 +361,98 @@
 </div>
 
 <script>
+    // ==========================================
+    // LIMPEZA FORÇADA - APAGA TUDO E RECOMEÇA
+    // ==========================================
+    // Esta linha apaga TUDO que estava salvo antes, resolvendo qualquer conflito.
+    localStorage.clear();
+
     // --- BANCO DE DADOS SIMULADO (LOCALSTORAGE) ---
     const DB = {
         get: (key) => JSON.parse(localStorage.getItem(key)) || [],
         set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
         
         init: () => {
-            // TRAVA DE SEGURANÇA: Verifica se a versão antiga dos dados existe e apaga para evitar conflitos
-            const versaoAtual = 'v2';
-            if (localStorage.getItem('versao_sistema') !== versaoAtual) {
-                localStorage.removeItem('usuarios');
-                localStorage.removeItem('perguntas');
-                localStorage.removeItem('respostas');
-                localStorage.setItem('versao_sistema', versaoAtual);
-            }
+            // Cria os usuários iniciais do zero
+            DB.set('usuarios', [
+                { id: 1, nome: 'Administrador', email: 'admin@escola.com', senha: '123', tipo: 'admin' },
+                { id: 2, nome: 'Prof. Exemplo', email: 'professor@escola.com', senha: '123', tipo: 'professor', turma: '6º Ano A' }
+            ]);
 
-            let usuarios = DB.get('usuarios');
-            
-            // Garante que o Admin existe
-            if (!usuarios.find(u => u.email === 'admin@escola.com')) {
-                usuarios.push({ id: 1, nome: 'Administrador', email: 'admin@escola.com', senha: '123', tipo: 'admin' });
-            }
-            
-            // Garante que o Professor de teste existe
-            if (!usuarios.find(u => u.email === 'professor@escola.com')) {
-                usuarios.push({ id: 2, nome: 'Prof. Exemplo', email: 'professor@escola.com', senha: '123', tipo: 'professor', turma: '6º Ano A' });
-            }
-            
-            DB.set('usuarios', usuarios);
+            // Cria as perguntas padrão
+            DB.set('perguntas', [
+                { id: 1, texto: "Como você avalia o desenvolvimento geral da turma em relação à aprendizagem?" },
+                { id: 2, texto: "Como está a participação, o envolvimento e a postura dos estudantes nas aulas?" },
+                { id: 3, texto: "Quais habilidades/conteúdos apresentam maior dificuldade para a turma?" },
+                { id: 4, texto: "Há estudantes com baixa frequência ou que necessitam de acompanhamento mais próximo? Quais e por quê?" },
+                { id: 5, texto: "Estudantes que se destacaram positivamente (aprendizagem, participação, responsabilidade ou protagonismo):" },
+                { id: 6, texto: "Estudantes que apresentam dificuldades significativas ou necessitam de intervenção/encaminhamento:" },
+                { id: 7, texto: "Quais estratégias já foram realizadas e quais ações você sugere para o próximo período?" },
+                { id: 8, texto: "Há alguma observação importante que deve ser registrada no Pré-Conselho?" },
+                { id: 9, texto: "Deixe aqui uma observação geral sobre a turma e/ou sobre algum estudante que considere relevante para o Conselho de Classe:" }
+            ]);
 
-            // Cria perguntas padrão se não existirem
-            if (!localStorage.getItem('perguntas')) {
-                DB.set('perguntas', [
-                    { id: 1, texto: "Como você avalia o desenvolvimento geral da turma em relação à aprendizagem?" },
-                    { id: 2, texto: "Como está a participação, o envolvimento e a postura dos estudantes nas aulas?" },
-                    { id: 3, texto: "Quais habilidades/conteúdos apresentam maior dificuldade para a turma?" },
-                    { id: 4, texto: "Há estudantes com baixa frequência ou que necessitam de acompanhamento mais próximo? Quais e por quê?" },
-                    { id: 5, texto: "Estudantes que se destacaram positivamente (aprendizagem, participação, responsabilidade ou protagonismo):" },
-                    { id: 6, texto: "Estudantes que apresentam dificuldades significativas ou necessitam de intervenção/encaminhamento:" },
-                    { id: 7, texto: "Quais estratégias já foram realizadas e quais ações você sugere para o próximo período?" },
-                    { id: 8, texto: "Há alguma observação importante que deve ser registrada no Pré-Conselho?" },
-                    { id: 9, texto: "Deixe aqui uma observação geral sobre a turma e/ou sobre algum estudante que considere relevante para o Conselho de Classe:" }
-                ]);
-            }
-            if (!localStorage.getItem('respostas')) {
-                DB.set('respostas', []);
-            }
+            // Inicia respostas vazias
+            DB.set('respostas', []);
         }
     };
 
     let usuarioLogado = null;
+    let tipoLoginAtual = '';
 
     // --- INICIALIZAÇÃO ---
     DB.init();
 
+    // --- NAVEGAÇÃO ENTRE TELAS ---
+    function irParaLogin(tipo) {
+        tipoLoginAtual = tipo;
+        
+        // Esconde todas as telas
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        
+        // Configura a tela de login
+        document.getElementById('login-screen').classList.add('active');
+        document.getElementById('login-msg').classList.add('hidden');
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        
+        if (tipo === 'admin') {
+            document.getElementById('login-titulo').innerText = 'Login do Administrador';
+            document.getElementById('login-subtitulo').innerText = 'Acesse o painel de gerenciamento';
+        } else {
+            document.getElementById('login-titulo').innerText = 'Login do Professor';
+            document.getElementById('login-subtitulo').innerText = 'Acesse o formulário do conselho';
+        }
+    }
+
+    function voltarParaEscolha() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('escolha-screen').classList.add('active');
+    }
+
     // --- FUNÇÕES DE LOGIN ---
-    function preencherTeste(tipo) {
-        if (tipo === 'admin') {
-            document.getElementById('admin-user').value = 'admin@escola.com';
-            document.getElementById('admin-pass').value = '123';
+    function preencherTeste() {
+        if (tipoLoginAtual === 'admin') {
+            document.getElementById('login-user').value = 'admin@escola.com';
+            document.getElementById('login-pass').value = '123';
         } else {
-            document.getElementById('prof-user').value = 'professor@escola.com';
-            document.getElementById('prof-pass').value = '123';
+            document.getElementById('login-user').value = 'professor@escola.com';
+            document.getElementById('login-pass').value = '123';
         }
     }
 
-    function mudarAbaLogin(tipo) {
-        document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
-        document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
-        
-        document.getElementById('form-login-' + tipo).classList.add('active');
-        
-        if (tipo === 'admin') {
-            document.querySelector('.login-tab:nth-child(1)').classList.add('active');
-        } else {
-            document.querySelector('.login-tab:nth-child(2)').classList.add('active');
-        }
-    }
+    function fazerLogin() {
+        const email = document.getElementById('login-user').value;
+        const senha = document.getElementById('login-pass').value;
+        const msg = document.getElementById('login-msg');
 
-    function fazerLogin(tipo) {
-        let email, senha, msgId;
-        
-        if (tipo === 'admin') {
-            email = document.getElementById('admin-user').value;
-            senha = document.getElementById('admin-pass').value;
-            msgId = 'login-msg-admin';
-        } else {
-            email = document.getElementById('prof-user').value;
-            senha = document.getElementById('prof-pass').value;
-            msgId = 'login-msg-prof';
-        }
-
-        const msg = document.getElementById(msgId);
         const usuarios = DB.get('usuarios');
         const user = usuarios.find(u => u.email === email && u.senha === senha);
 
         if (user) {
-            if (user.tipo !== tipo) {
-                msg.innerText = `Esta conta é de ${user.tipo}. Por favor, use a aba correta.`;
+            // Verifica se o tipo de usuário bate com o que foi escolhido
+            if (user.tipo !== tipoLoginAtual) {
+                msg.innerText = `Esta conta é de ${user.tipo}. Por favor, volte e escolha o perfil correto.`;
                 msg.className = "msg msg-error";
                 msg.classList.remove('hidden');
                 return;
@@ -461,7 +460,7 @@
 
             usuarioLogado = user;
             msg.classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('active');
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             
             if (user.tipo === 'admin') {
                 document.getElementById('admin-screen').classList.add('active');
@@ -473,7 +472,7 @@
                 mostrarAbaProfessor('responder');
             }
         } else {
-            msg.innerText = "E-mail ou senha incorretos! Tente usar os botões de preenchimento automático.";
+            msg.innerText = "E-mail ou senha incorretos! Tente usar o botão 'Preencher Automaticamente'.";
             msg.className = "msg msg-error";
             msg.classList.remove('hidden');
         }
@@ -482,15 +481,12 @@
     function logout() {
         usuarioLogado = null;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('login-screen').classList.add('active');
+        document.getElementById('escolha-screen').classList.add('active');
         
-        document.getElementById('admin-user').value = '';
-        document.getElementById('admin-pass').value = '';
-        document.getElementById('prof-user').value = '';
-        document.getElementById('prof-pass').value = '';
-        
+        // Limpa os campos
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
         document.querySelectorAll('.msg').forEach(m => m.classList.add('hidden'));
-        mudarAbaLogin('admin');
     }
 
     // --- NAVEGAÇÃO DO PROFESSOR ---
