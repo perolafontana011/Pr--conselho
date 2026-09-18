@@ -4,29 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Pré-Conselho Escolar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
             --secondary: #0ea5e9;
             --success: #10b981;
+            --success-hover: #059669;
             --danger: #ef4444;
-            --background: #f3f4f6;
+            --danger-hover: #dc2626;
+            --warning: #f59e0b;
+            --background: #f8fafc;
             --surface: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
             --radius: 12px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body { 
-            background-color: var(--background); 
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             color: var(--text-main); 
             display: flex; 
             justify-content: center; 
@@ -37,81 +43,100 @@
 
         #app { 
             width: 100%; 
-            max-width: 1000px; 
+            max-width: 1100px; 
             background: var(--surface); 
             border-radius: var(--radius); 
-            box-shadow: var(--shadow-lg); 
+            box-shadow: var(--shadow-xl); 
             overflow: hidden; 
         }
 
-        .screen { display: none; padding: 40px; animation: fadeIn 0.3s ease; }
+        .screen { display: none; padding: 50px; animation: fadeIn 0.4s ease; }
         .screen.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Tela de Escolha de Perfil */
-        #escolha-screen { text-align: center; padding: 60px 40px; }
-        #escolha-screen h1 { color: var(--text-main); font-size: 2rem; margin-bottom: 10px; }
-        #escolha-screen p { color: var(--text-muted); margin-bottom: 40px; font-size: 1.1rem; }
+        /* ========== TELA DE ESCOLHA DE PERFIL ========== */
+        #escolha-screen { text-align: center; padding: 80px 40px; }
+        #escolha-screen .logo { font-size: 3rem; margin-bottom: 20px; }
+        #escolha-screen h1 { color: var(--text-main); font-size: 2.2rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.5px; }
+        #escolha-screen p { color: var(--text-muted); margin-bottom: 50px; font-size: 1.1rem; }
         
-        .botoes-perfil { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .botoes-perfil { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
         .btn-perfil { 
             background: var(--surface); 
             border: 2px solid var(--border); 
             border-radius: var(--radius); 
-            padding: 40px 60px; 
+            padding: 45px 55px; 
             cursor: pointer; 
-            transition: all 0.3s ease; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            min-width: 250px;
+            min-width: 280px;
             box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
         }
-        .btn-perfil:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-        .btn-perfil .icone { font-size: 3rem; }
-        .btn-perfil .titulo { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
-        .btn-perfil .desc { font-size: 0.9rem; color: var(--text-muted); }
+        .btn-perfil::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .btn-perfil:hover::before { transform: scaleX(1); }
+        .btn-perfil:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+        .btn-perfil .icone { font-size: 3.5rem; margin-bottom: 5px; }
+        .btn-perfil .titulo { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+        .btn-perfil .desc { font-size: 0.9rem; color: var(--text-muted); text-align: center; line-height: 1.5; }
 
-        /* Tela de Login */
-        #login-screen { max-width: 450px; margin: 0 auto; box-shadow: none; background: transparent; padding: 0;}
+        /* ========== TELA DE LOGIN ========== */
+        #login-screen { max-width: 480px; margin: 0 auto; padding: 40px 20px; }
         .login-box { 
             background: var(--surface); 
-            padding: 40px; 
+            padding: 45px; 
             border-radius: var(--radius); 
             box-shadow: var(--shadow-lg); 
             border: 1px solid var(--border);
         }
-        .login-box h1 { margin-bottom: 10px; color: var(--text-main); font-size: 1.5rem; text-align: center; font-weight: 700; }
-        .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+        .login-box .icone-topo { font-size: 3rem; text-align: center; margin-bottom: 15px; }
+        .login-box h1 { margin-bottom: 8px; color: var(--text-main); font-size: 1.6rem; text-align: center; font-weight: 800; }
+        .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 35px; font-size: 0.95rem; }
         
-        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group { margin-bottom: 22px; text-align: left; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
         .form-group input, .form-group select, .form-group textarea { 
             width: 100%; 
-            padding: 12px 16px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
+            padding: 13px 16px; 
+            border: 1.5px solid var(--border); 
+            border-radius: var(--radius-sm); 
             font-size: 1rem; 
             transition: all 0.2s ease;
             background: var(--surface);
             color: var(--text-main);
+            font-family: 'Inter', sans-serif;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
-        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-group textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+        .form-group select[multiple] { min-height: 120px; padding: 8px; }
+        .form-group select[multiple] option { padding: 8px 12px; border-radius: 4px; margin-bottom: 2px; }
+        .form-group select[multiple] option:checked { background: var(--primary) linear-gradient(0deg, var(--primary), var(--primary)); color: white; }
+        
+        .input-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
 
         button { 
-            padding: 12px 24px; 
+            padding: 13px 24px; 
             border: none; 
-            border-radius: 8px; 
+            border-radius: var(--radius-sm); 
             cursor: pointer; 
             font-size: 0.95rem; 
             font-weight: 600; 
@@ -120,32 +145,52 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            font-family: 'Inter', sans-serif;
         }
         .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-1px); }
         .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #059669; transform: translateY(-1px); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-success:hover { background: var(--success-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { background: var(--background); border-color: var(--text-muted); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; border-radius: 6px; }
+        .btn-sm { padding: 7px 14px; font-size: 0.8rem; width: auto; border-radius: 6px; }
         .btn-voltar { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 0.9rem; padding: 0; }
         .btn-voltar:hover { color: var(--primary); }
 
-        .test-buttons { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); display: flex; gap: 10px; }
-        .test-buttons button { flex: 1; font-size: 0.8rem; padding: 8px; background: #f3f4f6; color: var(--text-main); border: 1px solid var(--border); }
-        .test-buttons button:hover { background: #e5e7eb; }
+        .test-buttons { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); }
+        .test-buttons button { 
+            width: 100%;
+            font-size: 0.85rem; 
+            padding: 10px; 
+            background: var(--background); 
+            color: var(--text-muted); 
+            border: 1px solid var(--border); 
+        }
+        .test-buttons button:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
 
+        /* ========== HEADER DOS PAINÉIS ========== */
         .header { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding-bottom: 20px; 
+            padding-bottom: 25px; 
             margin-bottom: 30px; 
             border-bottom: 1px solid var(--border);
         }
-        .header h2 { color: var(--text-main); font-size: 1.5rem; font-weight: 700; }
+        .header h2 { color: var(--text-main); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .header .tag-turma { 
+            font-size: 0.8rem; 
+            color: var(--primary); 
+            background: var(--primary-light); 
+            padding: 4px 10px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            margin-left: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
         .user-info { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
 
         .admin-controls, .prof-controls { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
@@ -154,32 +199,33 @@
 
         .section-box { 
             background: var(--background); 
-            padding: 25px; 
+            padding: 30px; 
             border-radius: var(--radius); 
             margin-bottom: 25px; 
             border: 1px solid var(--border); 
         }
-        .section-box h3 { margin-bottom: 20px; color: var(--text-main); font-size: 1.1rem; font-weight: 600; }
+        .section-box h3 { margin-bottom: 22px; color: var(--text-main); font-size: 1.15rem; font-weight: 700; }
+        .section-box p.descricao { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
 
         .pergunta-item { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             background: var(--surface); 
-            padding: 15px 20px; 
+            padding: 18px 22px; 
             border: 1px solid var(--border); 
-            border-radius: 8px; 
+            border-radius: var(--radius-sm); 
             margin-bottom: 12px; 
             box-shadow: var(--shadow-sm);
             transition: all 0.2s ease;
         }
-        .pergunta-item:hover { box-shadow: var(--shadow-md); border-color: var(--primary); }
-        .pergunta-item span { flex: 1; font-size: 0.95rem; color: var(--text-main); line-height: 1.4; }
+        .pergunta-item:hover { box-shadow: var(--shadow-md); border-color: var(--primary); transform: translateX(3px); }
+        .pergunta-item span { flex: 1; font-size: 0.95rem; color: var(--text-main); line-height: 1.5; padding-right: 15px; }
         
         .pergunta-bloco { 
             margin-bottom: 25px; 
             background: var(--surface); 
-            padding: 25px; 
+            padding: 28px; 
             border-radius: var(--radius); 
             border: 1px solid var(--border);
             border-left: 5px solid var(--primary); 
@@ -187,12 +233,46 @@
             transition: all 0.2s ease;
         }
         .pergunta-bloco:hover { box-shadow: var(--shadow-md); }
-        .pergunta-bloco label { font-weight: 600; display: block; margin-bottom: 12px; color: var(--text-main); font-size: 1rem; line-height: 1.5; }
+        .pergunta-bloco label { font-weight: 600; display: block; margin-bottom: 15px; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
         
         .hidden { display: none !important; }
-        .msg { padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; animation: fadeIn 0.3s ease; }
+        .msg { padding: 15px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; animation: fadeIn 0.3s ease; }
         .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
         .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+        /* Turmas do Professor (checkboxes) */
+        .turmas-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+        .turma-checkbox { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 8px 14px; 
+            background: var(--surface); 
+            border: 1.5px solid var(--border); 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+            transition: all 0.2s ease;
+        }
+        .turma-checkbox:hover { border-color: var(--primary); }
+        .turma-checkbox input { cursor: pointer; accent-color: var(--primary); }
+        .turma-checkbox.ativa { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+        /* Cartões de respostas do admin */
+        .resposta-card { 
+            margin-bottom: 22px; 
+            background: var(--surface); 
+            padding: 20px; 
+            border-radius: var(--radius-sm); 
+            border-left: 4px solid var(--primary); 
+            box-shadow: var(--shadow-sm);
+        }
+        .resposta-card .pergunta { font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 8px; line-height: 1.5; }
+        .resposta-card .resposta { font-size: 1rem; color: var(--text-main); line-height: 1.6; }
+        
+        .filtros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 600px) { .filtros-grid { grid-template-columns: 1fr; } }
 
         @media print {
             body { background: white; padding: 0; display: block; }
@@ -200,7 +280,7 @@
             .no-print { display: none !important; }
             .screen { padding: 0; }
             .section-box { border: none; padding: 0; background: white; }
-            .pergunta-bloco { border-left: none; border-bottom: 1px solid #ccc; border-radius: 0; padding: 15px 0; box-shadow: none; }
+            .pergunta-bloco, .resposta-card { border-left: none; border-bottom: 1px solid #ccc; border-radius: 0; padding: 15px 0; box-shadow: none; }
             .admin-controls { display: none !important; }
         }
     </style>
@@ -208,8 +288,9 @@
 <body>
 
 <div id="app">
-    <!-- TELA 1: ESCOLHA DE PERFIL (NOVO!) -->
+    <!-- ========== TELA 1: ESCOLHA DE PERFIL ========== -->
     <div id="escolha-screen" class="screen active">
+        <div class="logo">📚</div>
         <h1>Pré-Conselho Escolar</h1>
         <p>Selecione o seu perfil para continuar</p>
         
@@ -217,7 +298,7 @@
             <div class="btn-perfil" onclick="irParaLogin('admin')">
                 <div class="icone">👨‍💼</div>
                 <div class="titulo">Administrador</div>
-                <div class="desc">Gerenciar perguntas, professores e respostas</div>
+                <div class="desc">Gerenciar perguntas, professores e visualizar respostas</div>
             </div>
             
             <div class="btn-perfil" onclick="irParaLogin('professor')">
@@ -228,11 +309,12 @@
         </div>
     </div>
 
-    <!-- TELA 2: LOGIN -->
+    <!-- ========== TELA 2: LOGIN ========== -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <button class="btn-voltar" onclick="voltarParaEscolha()">← Voltar para escolha de perfil</button>
             
+            <div class="icone-topo" id="login-icone">👨‍💼</div>
             <h1 id="login-titulo">Login</h1>
             <p class="subtitulo" id="login-subtitulo">Entre com suas credenciais</p>
             
@@ -247,40 +329,75 @@
                 <input type="password" id="login-pass" placeholder="******">
             </div>
             
-            <button class="btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-primary" onclick="fazerLogin()">Entrar</button>
             
             <div class="test-buttons">
-                <button type="button" onclick="preencherTeste()">Preencher Automaticamente</button>
+                <button type="button" onclick="preencherTeste()">Preencher Credenciais de Teste</button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DO PROFESSOR -->
+    <!-- ========== TELA DO PROFESSOR ========== -->
     <div id="professor-screen" class="screen">
         <div class="header no-print">
-            <h2>Olá, <span id="prof-nome"></span> <span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">(Turma: <span id="prof-turma"></span>)</span></h2>
+            <div>
+                <h2>Olá, <span id="prof-nome"></span></h2>
+                <span class="tag-turma" id="prof-turmas-tag">Minhas Turmas</span>
+            </div>
             <button class="btn-outline" onclick="logout()">Sair</button>
         </div>
         
         <div class="prof-controls no-print">
             <button id="btn-aba-responder" class="btn-primary" onclick="mostrarAbaProfessor('responder')">Responder Formulário</button>
             <button id="btn-aba-historico" class="btn-outline" onclick="mostrarAbaProfessor('historico')">Meu Histórico</button>
+            <button id="btn-aba-turmas" class="btn-outline" onclick="mostrarAbaProfessor('turmas')">Minhas Turmas</button>
         </div>
 
+        <!-- Aba: Responder Formulário -->
         <div id="aba-prof-responder" class="aba-prof-content">
             <div id="prof-msg" class="msg hidden no-print"></div>
+            
+            <!-- Seleção de turma para responder -->
+            <div class="section-box no-print">
+                <h3>Selecione a Turma</h3>
+                <p class="descricao">Escolha para qual turma você deseja responder o formulário:</p>
+                <div class="form-group">
+                    <select id="turma-responder" onchange="carregarFormularioProfessor()"></select>
+                </div>
+            </div>
+
             <form id="form-professor" onsubmit="salvarRespostas(event)">
                 <div id="perguntas-container"></div>
                 <button type="submit" class="btn-primary no-print" style="margin-top:30px; max-width: 300px; margin-left: auto; margin-right: auto;">Salvar Respostas</button>
             </form>
         </div>
 
+        <!-- Aba: Histórico do Professor -->
         <div id="aba-prof-historico" class="aba-prof-content hidden">
+            <div class="section-box no-print">
+                <h3>Filtrar Histórico</h3>
+                <div class="form-group">
+                    <label>Turma:</label>
+                    <select id="filtro-turma-prof" onchange="renderizarHistoricoProfessor()">
+                        <option value="Todas">Todas as Turmas</option>
+                    </select>
+                </div>
+            </div>
             <div id="historico-container"></div>
+        </div>
+
+        <!-- Aba: Minhas Turmas -->
+        <div id="aba-prof-turmas" class="aba-prof-content hidden">
+            <div class="section-box">
+                <h3>Minhas Turmas</h3>
+                <p class="descricao">Marque as turmas que você leciona. Elas aparecerão na sua lista de respostas.</p>
+                <div id="turmas-prof-container" class="turmas-container"></div>
+                <button class="btn-success" style="margin-top: 20px; max-width: 250px;" onclick="salvarTurmasProfessor()">Salvar Turmas</button>
+            </div>
         </div>
     </div>
 
-    <!-- TELA DO ADMINISTRADOR -->
+    <!-- ========== TELA DO ADMINISTRADOR ========== -->
     <div id="admin-screen" class="screen">
         <div class="header no-print">
             <h2>Painel do Administrador</h2>
@@ -297,6 +414,7 @@
             <button class="btn-success" onclick="window.print()">Imprimir / PDF</button>
         </div>
 
+        <!-- Aba: Gerenciar Perguntas -->
         <div id="aba-gerenciar-perguntas" class="aba-admin-content">
             <div class="section-box no-print">
                 <h3>Adicionar Nova Pergunta</h3>
@@ -311,6 +429,7 @@
             </div>
         </div>
 
+        <!-- Aba: Cadastrar Professor -->
         <div id="aba-cadastrar-prof" class="aba-admin-content hidden">
             <div class="section-box">
                 <h3>Cadastrar Novo Professor</h3>
@@ -327,32 +446,48 @@
                     <input type="text" id="prof-senha-cad" placeholder="Senha de acesso">
                 </div>
                 <div class="form-group">
-                    <label>Turma que leciona</label>
-                    <select id="prof-turma-cad">
+                    <label>Turmas que leciona</label>
+                    <p class="input-hint">Segure Ctrl (Windows) ou Cmd (Mac) para selecionar várias turmas</p>
+                    <select id="prof-turmas-cad" multiple>
                         <option value="6º Ano A">6º Ano A</option>
                         <option value="6º Ano B">6º Ano B</option>
                         <option value="7º Ano A">7º Ano A</option>
+                        <option value="7º Ano B">7º Ano B</option>
                         <option value="8º Ano A">8º Ano A</option>
+                        <option value="8º Ano B">8º Ano B</option>
                         <option value="9º Ano A">9º Ano A</option>
+                        <option value="9º Ano B">9º Ano B</option>
                     </select>
                 </div>
                 <button class="btn-success" style="max-width: 250px;" onclick="cadastrarProfessor()">Cadastrar Professor</button>
             </div>
         </div>
 
+        <!-- Aba: Ver Respostas -->
         <div id="aba-ver-respostas" class="aba-admin-content hidden">
             <div class="section-box no-print">
                 <h3>Filtrar Respostas</h3>
-                <div class="form-group" style="max-width: 300px;">
-                    <label>Selecione a Turma:</label>
-                    <select id="filtro-turma" onchange="renderizarRespostasAdmin()">
-                        <option value="Todas">Todas as Turmas</option>
-                        <option value="6º Ano A">6º Ano A</option>
-                        <option value="6º Ano B">6º Ano B</option>
-                        <option value="7º Ano A">7º Ano A</option>
-                        <option value="8º Ano A">8º Ano A</option>
-                        <option value="9º Ano A">9º Ano A</option>
-                    </select>
+                <div class="filtros-grid">
+                    <div class="form-group">
+                        <label>Professor:</label>
+                        <select id="filtro-professor" onchange="renderizarRespostasAdmin()">
+                            <option value="Todos">Todos os Professores</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Turma:</label>
+                        <select id="filtro-turma" onchange="renderizarRespostasAdmin()">
+                            <option value="Todas">Todas as Turmas</option>
+                            <option value="6º Ano A">6º Ano A</option>
+                            <option value="6º Ano B">6º Ano B</option>
+                            <option value="7º Ano A">7º Ano A</option>
+                            <option value="7º Ano B">7º Ano B</option>
+                            <option value="8º Ano A">8º Ano A</option>
+                            <option value="8º Ano B">8º Ano B</option>
+                            <option value="9º Ano A">9º Ano A</option>
+                            <option value="9º Ano B">9º Ano B</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div id="respostas-container"></div>
@@ -362,24 +497,23 @@
 
 <script>
     // ==========================================
-    // LIMPEZA FORÇADA - APAGA TUDO E RECOMEÇA
+    // LIMPEZA FORÇADA - EVITA CONFLITOS
     // ==========================================
-    // Esta linha apaga TUDO que estava salvo antes, resolvendo qualquer conflito.
     localStorage.clear();
 
-    // --- BANCO DE DADOS SIMULADO (LOCALSTORAGE) ---
+    const TODAS_TURMAS = ["6º Ano A", "6º Ano B", "7º Ano A", "7º Ano B", "8º Ano A", "8º Ano B", "9º Ano A", "9º Ano B"];
+
+    // --- BANCO DE DADOS SIMULADO ---
     const DB = {
         get: (key) => JSON.parse(localStorage.getItem(key)) || [],
         set: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
         
         init: () => {
-            // Cria os usuários iniciais do zero
             DB.set('usuarios', [
                 { id: 1, nome: 'Administrador', email: 'admin@escola.com', senha: '123', tipo: 'admin' },
-                { id: 2, nome: 'Prof. Exemplo', email: 'professor@escola.com', senha: '123', tipo: 'professor', turma: '6º Ano A' }
+                { id: 2, nome: 'Prof. Exemplo', email: 'professor@escola.com', senha: '123', tipo: 'professor', turmas: ['6º Ano A', '7º Ano B'] }
             ]);
 
-            // Cria as perguntas padrão
             DB.set('perguntas', [
                 { id: 1, texto: "Como você avalia o desenvolvimento geral da turma em relação à aprendizagem?" },
                 { id: 2, texto: "Como está a participação, o envolvimento e a postura dos estudantes nas aulas?" },
@@ -392,7 +526,6 @@
                 { id: 9, texto: "Deixe aqui uma observação geral sobre a turma e/ou sobre algum estudante que considere relevante para o Conselho de Classe:" }
             ]);
 
-            // Inicia respostas vazias
             DB.set('respostas', []);
         }
     };
@@ -403,23 +536,22 @@
     // --- INICIALIZAÇÃO ---
     DB.init();
 
-    // --- NAVEGAÇÃO ENTRE TELAS ---
+    // --- NAVEGAÇÃO ---
     function irParaLogin(tipo) {
         tipoLoginAtual = tipo;
-        
-        // Esconde todas as telas
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        
-        // Configura a tela de login
         document.getElementById('login-screen').classList.add('active');
+        
         document.getElementById('login-msg').classList.add('hidden');
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
         
         if (tipo === 'admin') {
+            document.getElementById('login-icone').innerText = '👨‍💼';
             document.getElementById('login-titulo').innerText = 'Login do Administrador';
             document.getElementById('login-subtitulo').innerText = 'Acesse o painel de gerenciamento';
         } else {
+            document.getElementById('login-icone').innerText = '👩‍🏫';
             document.getElementById('login-titulo').innerText = 'Login do Professor';
             document.getElementById('login-subtitulo').innerText = 'Acesse o formulário do conselho';
         }
@@ -430,7 +562,6 @@
         document.getElementById('escolha-screen').classList.add('active');
     }
 
-    // --- FUNÇÕES DE LOGIN ---
     function preencherTeste() {
         if (tipoLoginAtual === 'admin') {
             document.getElementById('login-user').value = 'admin@escola.com';
@@ -450,9 +581,8 @@
         const user = usuarios.find(u => u.email === email && u.senha === senha);
 
         if (user) {
-            // Verifica se o tipo de usuário bate com o que foi escolhido
             if (user.tipo !== tipoLoginAtual) {
-                msg.innerText = `Esta conta é de ${user.tipo}. Por favor, volte e escolha o perfil correto.`;
+                msg.innerText = `Esta conta é de ${user.tipo}. Volte e escolha o perfil correto.`;
                 msg.className = "msg msg-error";
                 msg.classList.remove('hidden');
                 return;
@@ -468,11 +598,11 @@
             } else {
                 document.getElementById('professor-screen').classList.add('active');
                 document.getElementById('prof-nome').innerText = user.nome;
-                document.getElementById('prof-turma').innerText = user.turma;
+                atualizarTagTurmasProfessor();
                 mostrarAbaProfessor('responder');
             }
         } else {
-            msg.innerText = "E-mail ou senha incorretos! Tente usar o botão 'Preencher Automaticamente'.";
+            msg.innerText = "E-mail ou senha incorretos! Tente usar o botão de preenchimento automático.";
             msg.className = "msg msg-error";
             msg.classList.remove('hidden');
         }
@@ -482,33 +612,264 @@
         usuarioLogado = null;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('escolha-screen').classList.add('active');
-        
-        // Limpa os campos
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
         document.querySelectorAll('.msg').forEach(m => m.classList.add('hidden'));
     }
 
-    // --- NAVEGAÇÃO DO PROFESSOR ---
+    function atualizarTagTurmasProfessor() {
+        const tag = document.getElementById('prof-turmas-tag');
+        if (usuarioLogado.turmas && usuarioLogado.turmas.length > 0) {
+            tag.innerText = `Turmas: ${usuarioLogado.turmas.join(', ')}`;
+        } else {
+            tag.innerText = 'Nenhuma turma cadastrada';
+        }
+    }
+
+    // ==========================================
+    // NAVEGAÇÃO DO PROFESSOR
+    // ==========================================
     function mostrarAbaProfessor(aba) {
         document.querySelectorAll('.aba-prof-content').forEach(el => el.classList.add('hidden'));
         document.getElementById('aba-prof-' + aba).classList.remove('hidden');
 
-        const btnResponder = document.getElementById('btn-aba-responder');
-        const btnHistorico = document.getElementById('btn-aba-historico');
-        
+        const botoes = {
+            responder: document.getElementById('btn-aba-responder'),
+            historico: document.getElementById('btn-aba-historico'),
+            turmas: document.getElementById('btn-aba-turmas')
+        };
+
+        Object.keys(botoes).forEach(k => {
+            botoes[k].className = (k === aba) ? 'btn-primary aba-ativa' : 'btn-outline';
+        });
+
         if (aba === 'responder') {
-            btnResponder.className = 'btn-primary aba-ativa';
-            btnHistorico.className = 'btn-outline';
+            configurarSelectTurmasResponder();
             carregarFormularioProfessor();
-        } else {
-            btnResponder.className = 'btn-outline';
-            btnHistorico.className = 'btn-primary aba-ativa';
+        } else if (aba === 'historico') {
+            configurarFiltroTurmasHistorico();
             renderizarHistoricoProfessor();
+        } else if (aba === 'turmas') {
+            renderizarTurmasProfessor();
         }
     }
 
-    // --- NAVEGAÇÃO DO ADMIN ---
+    // --- SELEÇÃO DE TURMA PARA RESPONDER ---
+    function configurarSelectTurmasResponder() {
+        const select = document.getElementById('turma-responder');
+        select.innerHTML = '';
+        
+        if (!usuarioLogado.turmas || usuarioLogado.turmas.length === 0) {
+            select.innerHTML = '<option value="">Nenhuma turma cadastrada</option>';
+            return;
+        }
+
+        usuarioLogado.turmas.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            select.appendChild(opt);
+        });
+    }
+
+    // --- FORMULÁRIO DE RESPOSTAS ---
+    function carregarFormularioProfessor() {
+        const container = document.getElementById('perguntas-container');
+        const turmaSelecionada = document.getElementById('turma-responder').value;
+        const perguntas = DB.get('perguntas');
+        const respostas = DB.get('respostas');
+        
+        container.innerHTML = '';
+        document.getElementById('prof-msg').classList.add('hidden');
+
+        if (!turmaSelecionada) {
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você não tem nenhuma turma cadastrada. Vá em "Minhas Turmas" para adicionar.</p></div>';
+            return;
+        }
+
+        if (perguntas.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta disponível no momento.</p>';
+            return;
+        }
+
+        // Pega respostas deste professor para esta turma específica
+        const respostasDoProf = respostas.filter(r => 
+            r.professorId === usuarioLogado.id && r.turma === turmaSelecionada
+        );
+
+        // Cabeçalho da turma sendo respondida
+        const header = document.createElement('div');
+        header.className = 'section-box';
+        header.innerHTML = `
+            <h3 style="margin: 0;">📝 Respondendo para: <span style="color: var(--primary);">${turmaSelecionada}</span></h3>
+        `;
+        container.appendChild(header);
+
+        perguntas.forEach(p => {
+            const respostaAntiga = respostasDoProf.find(r => r.perguntaId === p.id);
+            const valor = respostaAntiga ? respostaAntiga.resposta : '';
+
+            const div = document.createElement('div');
+            div.className = 'pergunta-bloco';
+            div.innerHTML = `
+                <label>${p.texto}</label>
+                <textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function salvarRespostas(e) {
+        e.preventDefault();
+        const turmaSelecionada = document.getElementById('turma-responder').value;
+        if (!turmaSelecionada) return alert("Selecione uma turma primeiro.");
+
+        const perguntas = DB.get('perguntas');
+        let respostas = DB.get('respostas');
+        const msg = document.getElementById('prof-msg');
+
+        // Remove respostas antigas deste professor para esta turma
+        respostas = respostas.filter(r => 
+            !(r.professorId === usuarioLogado.id && r.turma === turmaSelecionada)
+        );
+
+        perguntas.forEach(p => {
+            const textoResposta = document.getElementById(`resp-${p.id}`).value.trim();
+            respostas.push({
+                id: Date.now() + Math.random(),
+                professorId: usuarioLogado.id,
+                professorNome: usuarioLogado.nome,
+                turma: turmaSelecionada,
+                perguntaId: p.id,
+                resposta: textoResposta,
+                data: new Date().toISOString()
+            });
+        });
+
+        DB.set('respostas', respostas);
+
+        msg.innerText = `Respostas para ${turmaSelecionada} salvas com sucesso!`;
+        msg.className = "msg msg-success";
+        msg.classList.remove('hidden');
+        
+        setTimeout(() => { msg.classList.add('hidden'); }, 3500);
+    }
+
+    // --- HISTÓRICO DO PROFESSOR ---
+    function configurarFiltroTurmasHistorico() {
+        const select = document.getElementById('filtro-turma-prof');
+        const valorAtual = select.value;
+        select.innerHTML = '<option value="Todas">Todas as Turmas</option>';
+        
+        if (usuarioLogado.turmas) {
+            usuarioLogado.turmas.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                select.appendChild(opt);
+            });
+        }
+        if (valorAtual && valorAtual !== 'Todas') select.value = valorAtual;
+    }
+
+    function renderizarHistoricoProfessor() {
+        const container = document.getElementById('historico-container');
+        const filtro = document.getElementById('filtro-turma-prof').value;
+        const respostas = DB.get('respostas');
+        const perguntas = DB.get('perguntas');
+        
+        let minhasRespostas = respostas.filter(r => r.professorId === usuarioLogado.id);
+        if (filtro !== 'Todas') {
+            minhasRespostas = minhasRespostas.filter(r => r.turma === filtro);
+        }
+
+        if (minhasRespostas.length === 0) {
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você ainda não enviou nenhuma resposta.</p></div>';
+            return;
+        }
+
+        // Agrupa por turma + data
+        const envios = {};
+        minhasRespostas.forEach(r => {
+            const chave = `${r.turma}||${new Date(r.data).toLocaleString()}`;
+            if (!envios[chave]) envios[chave] = [];
+            envios[chave].push(r);
+        });
+
+        container.innerHTML = '';
+        
+        Object.keys(envios).sort((a, b) => {
+            const dataA = new Date(a.split('||')[1]);
+            const dataB = new Date(b.split('||')[1]);
+            return dataB - dataA;
+        }).forEach(chave => {
+            const [turma, data] = chave.split('||');
+            const listaRespostas = envios[chave];
+
+            const divBloco = document.createElement('div');
+            divBloco.className = 'section-box';
+            
+            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 20px;">📋 Turma: ${turma} <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">— ${data}</span></h3>`;
+
+            listaRespostas.forEach(r => {
+                const perguntaObj = perguntas.find(p => p.id === r.perguntaId);
+                const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída]`;
+                
+                html += `
+                    <div class="resposta-card">
+                        <div class="pergunta">${textoPergunta}</div>
+                        <div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div>
+                    </div>
+                `;
+            });
+            divBloco.innerHTML = html;
+            container.appendChild(divBloco);
+        });
+    }
+
+    // --- TURMAS DO PROFESSOR ---
+    function renderizarTurmasProfessor() {
+        const container = document.getElementById('turmas-prof-container');
+        container.innerHTML = '';
+
+        TODAS_TURMAS.forEach(turma => {
+            const ativa = usuarioLogado.turmas && usuarioLogado.turmas.includes(turma);
+            const label = document.createElement('label');
+            label.className = 'turma-checkbox' + (ativa ? ' ativa' : '');
+            label.innerHTML = `
+                <input type="checkbox" value="${turma}" ${ativa ? 'checked' : ''} onchange="this.parentElement.classList.toggle('ativa', this.checked)">
+                ${turma}
+            `;
+            container.appendChild(label);
+        });
+    }
+
+    function salvarTurmasProfessor() {
+        const checkboxes = document.querySelectorAll('#turmas-prof-container input[type="checkbox"]:checked');
+        const turmasSelecionadas = Array.from(checkboxes).map(cb => cb.value);
+
+        if (turmasSelecionadas.length === 0) {
+            if (!confirm("Você não selecionou nenhuma turma. Deseja continuar?")) return;
+        }
+
+        // Atualiza usuário logado
+        usuarioLogado.turmas = turmasSelecionadas;
+        
+        // Atualiza no banco de dados
+        const usuarios = DB.get('usuarios');
+        const index = usuarios.findIndex(u => u.id === usuarioLogado.id);
+        if (index !== -1) {
+            usuarios[index].turmas = turmasSelecionadas;
+            DB.set('usuarios', usuarios);
+        }
+
+        atualizarTagTurmasProfessor();
+        alert("Turmas salvas com sucesso!");
+    }
+
+    // ==========================================
+    // NAVEGAÇÃO DO ADMIN
+    // ==========================================
     function mostrarAbaAdmin(abaId) {
         document.querySelectorAll('.aba-admin-content').forEach(aba => aba.classList.add('hidden'));
         document.getElementById('aba-' + abaId).classList.remove('hidden');
@@ -519,10 +880,13 @@
         if(abaId === 'ver-respostas') document.getElementById('btn-aba-respostas').className = 'btn-primary aba-ativa';
 
         if (abaId === 'gerenciar-perguntas') renderizarPerguntasAdmin();
-        if (abaId === 'ver-respostas') renderizarRespostasAdmin();
+        if (abaId === 'ver-respostas') {
+            configurarFiltroProfessores();
+            renderizarRespostasAdmin();
+        }
     }
 
-    // --- FUNÇÕES DO ADMINISTRADOR ---
+    // --- PERGUNTAS ---
     function adicionarPergunta() {
         const texto = document.getElementById('nova-pergunta-texto').value.trim();
         if (!texto) return alert("Digite o texto da pergunta.");
@@ -553,11 +917,11 @@
             return;
         }
 
-        perguntas.forEach(p => {
+        perguntas.forEach((p, i) => {
             const div = document.createElement('div');
             div.className = 'pergunta-item';
             div.innerHTML = `
-                <span>${p.texto}</span>
+                <span><strong>${i + 1}.</strong> ${p.texto}</span>
                 <div class="no-print">
                     <button class="btn-danger btn-sm" onclick="excluirPergunta(${p.id})">Excluir</button>
                 </div>
@@ -566,178 +930,99 @@
         });
     }
 
+    // --- CADASTRAR PROFESSOR ---
     function cadastrarProfessor() {
         const nome = document.getElementById('prof-nome-cad').value.trim();
         const email = document.getElementById('prof-email-cad').value.trim();
         const senha = document.getElementById('prof-senha-cad').value.trim();
-        const turma = document.getElementById('prof-turma-cad').value;
+        const selectTurmas = document.getElementById('prof-turmas-cad');
+        const turmas = Array.from(selectTurmas.selectedOptions).map(opt => opt.value);
 
-        if (!nome || !email || !senha) return alert("Preencha todos os campos!");
+        if (!nome || !email || !senha) return alert("Preencha todos os campos obrigatórios!");
+        if (turmas.length === 0) return alert("Selecione pelo menos uma turma para o professor!");
 
         const usuarios = DB.get('usuarios');
         if (usuarios.find(u => u.email === email)) return alert("Este e-mail já está cadastrado!");
 
-        usuarios.push({ id: Date.now(), nome, email, senha, tipo: 'professor', turma });
+        usuarios.push({ id: Date.now(), nome, email, senha, tipo: 'professor', turmas });
         DB.set('usuarios', usuarios);
 
-        alert("Professor cadastrado com sucesso!");
+        alert(`Professor ${nome} cadastrado com sucesso!\nTurmas: ${turmas.join(', ')}`);
+        
         document.getElementById('prof-nome-cad').value = '';
         document.getElementById('prof-email-cad').value = '';
         document.getElementById('prof-senha-cad').value = '';
+        selectTurmas.selectedIndex = -1;
+    }
+
+    // --- VER RESPOSTAS ---
+    function configurarFiltroProfessores() {
+        const select = document.getElementById('filtro-professor');
+        const valorAtual = select.value;
+        select.innerHTML = '<option value="Todos">Todos os Professores</option>';
+        
+        const usuarios = DB.get('usuarios').filter(u => u.tipo === 'professor');
+        usuarios.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.nome;
+            opt.textContent = u.nome;
+            select.appendChild(opt);
+        });
+        if (valorAtual && valorAtual !== 'Todos') select.value = valorAtual;
     }
 
     function renderizarRespostasAdmin() {
         const container = document.getElementById('respostas-container');
         const filtroTurma = document.getElementById('filtro-turma').value;
+        const filtroProfessor = document.getElementById('filtro-professor').value;
         const respostas = DB.get('respostas');
         const perguntas = DB.get('perguntas');
 
         let respostasFiltradas = respostas;
         if (filtroTurma !== 'Todas') {
-            respostasFiltradas = respostas.filter(r => r.turma === filtroTurma);
+            respostasFiltradas = respostasFiltradas.filter(r => r.turma === filtroTurma);
+        }
+        if (filtroProfessor !== 'Todos') {
+            respostasFiltradas = respostasFiltradas.filter(r => r.professorNome === filtroProfessor);
         }
 
         if (respostasFiltradas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta enviada para esta turma ainda.</p></div>';
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta encontrada com os filtros selecionados.</p></div>';
             return;
         }
 
         container.innerHTML = '';
         
+        // Agrupa por professor + turma
         const agrupado = {};
         respostasFiltradas.forEach(r => {
-            const chave = `${r.professorNome} - ${r.turma}`;
+            const chave = `${r.professorNome}||${r.turma}`;
             if (!agrupado[chave]) agrupado[chave] = [];
             agrupado[chave].push(r);
         });
 
         for (const [chave, listaRespostas] of Object.entries(agrupado)) {
+            const [professorNome, turma] = chave.split('||');
             const divBloco = document.createElement('div');
             divBloco.className = 'section-box';
             
-            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px;">Professor(a): ${listaRespostas[0].professorNome} | Turma: ${listaRespostas[0].turma}</h3>`;
+            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 20px;">👨‍🏫 ${professorNome} — <span style="color: var(--primary);">${turma}</span></h3>`;
             html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Data de envio: ${new Date(listaRespostas[0].data).toLocaleString()}</p>`;
 
             listaRespostas.forEach(r => {
                 const perguntaObj = perguntas.find(p => p.id === r.perguntaId);
-                const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída: ${r.perguntaId}]`;
+                const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída]`;
                 
                 html += `
-                    <div style="margin-bottom: 20px; background: var(--surface); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
-                        <p style="font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 5px;">${textoPergunta}</p>
-                        <p style="font-size: 1rem; color: var(--text-main); line-height: 1.5;">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</p>
+                    <div class="resposta-card">
+                        <div class="pergunta">${textoPergunta}</div>
+                        <div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div>
                     </div>
                 `;
             });
             divBloco.innerHTML = html;
             container.appendChild(divBloco);
         }
-    }
-
-    // --- FUNÇÕES DO PROFESSOR ---
-    function carregarFormularioProfessor() {
-        const container = document.getElementById('perguntas-container');
-        const perguntas = DB.get('perguntas');
-        const respostas = DB.get('respostas');
-        
-        container.innerHTML = '';
-        document.getElementById('prof-msg').classList.add('hidden');
-
-        if (perguntas.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta disponível no momento.</p>';
-            return;
-        }
-
-        const respostasDoProf = respostas.filter(r => r.professorId === usuarioLogado.id);
-
-        perguntas.forEach(p => {
-            const respostaAntiga = respostasDoProf.find(r => r.perguntaId === p.id);
-            const valor = respostaAntiga ? respostaAntiga.resposta : '';
-
-            const div = document.createElement('div');
-            div.className = 'pergunta-bloco';
-            div.innerHTML = `
-                <label>${p.texto}</label>
-                <textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>
-            `;
-            container.appendChild(div);
-        });
-    }
-
-    function salvarRespostas(e) {
-        e.preventDefault();
-        const perguntas = DB.get('perguntas');
-        let respostas = DB.get('respostas');
-        const msg = document.getElementById('prof-msg');
-
-        respostas = respostas.filter(r => r.professorId !== usuarioLogado.id);
-
-        perguntas.forEach(p => {
-            const textoResposta = document.getElementById(`resp-${p.id}`).value.trim();
-            respostas.push({
-                id: Date.now() + Math.random(),
-                professorId: usuarioLogado.id,
-                professorNome: usuarioLogado.nome,
-                turma: usuarioLogado.turma,
-                perguntaId: p.id,
-                resposta: textoResposta,
-                data: new Date().toISOString()
-            });
-        });
-
-        DB.set('respostas', respostas);
-
-        msg.innerText = "Respostas salvas com sucesso!";
-        msg.className = "msg msg-success";
-        msg.classList.remove('hidden');
-        
-        setTimeout(() => { msg.classList.add('hidden'); }, 3000);
-    }
-
-    function renderizarHistoricoProfessor() {
-        const container = document.getElementById('historico-container');
-        const respostas = DB.get('respostas');
-        const perguntas = DB.get('perguntas');
-        
-        const minhasRespostas = respostas.filter(r => r.professorId === usuarioLogado.id);
-
-        if (minhasRespostas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você ainda não enviou nenhuma resposta.</p></div>';
-            return;
-        }
-
-        const envios = {};
-        minhasRespostas.forEach(r => {
-            const dataFormatada = new Date(r.data).toLocaleString();
-            if (!envios[dataFormatada]) envios[dataFormatada] = [];
-            envios[dataFormatada].push(r);
-        });
-
-        container.innerHTML = '';
-        const datas = Object.keys(envios).sort((a, b) => new Date(b) - new Date(a));
-        const dataRecente = datas[0];
-        const respostasRecentes = envios[dataRecente];
-
-        const divBloco = document.createElement('div');
-        divBloco.className = 'section-box';
-        
-        let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px;">Meu Último Envio (${dataRecente})</h3>`;
-        html += `<p style="font-size: 0.9rem; margin-bottom: 20px; color: var(--text-muted);">Turma: <strong style="color: var(--text-main);">${usuarioLogado.turma}</strong></p>`;
-
-        respostasRecentes.forEach(r => {
-            const perguntaObj = perguntas.find(p => p.id === r.perguntaId);
-            const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída: ${r.perguntaId}]`;
-            
-            html += `
-                <div style="margin-bottom: 20px; background: var(--surface); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);">
-                    <p style="font-weight: 600; color: var(--text-main); font-size: 0.95rem; margin-bottom: 5px;">${textoPergunta}</p>
-                    <p style="font-size: 1rem; color: var(--text-main); line-height: 1.5;">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</p>
-                </div>
-            `;
-        });
-        
-        divBloco.innerHTML = html;
-        container.appendChild(divBloco);
     }
 </script>
 
