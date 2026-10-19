@@ -229,27 +229,14 @@
         .ranking-barra div.ruim { background: linear-gradient(90deg, #dc2626, #ef4444); }
         .ranking-votos { font-weight: 700; font-size: 0.9rem; color: var(--text-secondary); min-width: 60px; text-align: right; }
 
-        /* ==================== IMPORTAR PLANILHA (NOVO) ==================== */
-        .upload-area {
-            border: 2px dashed var(--border-strong);
-            border-radius: var(--radius-md);
-            padding: 40px 20px;
-            text-align: center;
-            background: var(--bg-surface);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-        .upload-area:hover, .upload-area.dragover {
-            border-color: var(--primary);
-            background: var(--primary-soft);
-        }
+        /* ==================== IMPORTAR PLANILHA ==================== */
+        .upload-area { border: 2px dashed var(--border-strong); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; background: var(--bg-surface); transition: all 0.3s ease; cursor: pointer; margin-top: 12px; }
+        .upload-area:hover, .upload-area.dragover { border-color: var(--primary); background: var(--primary-soft); }
         .upload-area.dragover { transform: scale(1.01); }
         .upload-area svg { width: 48px; height: 48px; color: var(--primary); margin-bottom: 12px; }
         .upload-area .titulo { font-weight: 700; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 6px; }
         .upload-area .hint { font-size: 0.85rem; color: var(--text-muted); }
         .upload-area input[type="file"] { display: none; }
-
         .preview-tabela { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.85rem; }
         .preview-tabela th { background: var(--primary); color: white; padding: 10px; text-align: left; font-weight: 600; }
         .preview-tabela td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
@@ -425,7 +412,7 @@
             </div>
         </div>
 
-        <!-- ABA: Alunos (COM IMPORTAÇÃO) -->
+        <!-- ABA: Alunos -->
         <div id="aba-gerenciar-alunos" class="aba-admin-content hidden">
             <!-- Cadastro manual -->
             <div class="section-box no-print">
@@ -458,9 +445,25 @@
             <div class="section-box no-print">
                 <h3><i data-lucide="upload"></i> Importar Planilha de Alunos</h3>
                 <p class="descricao">
-                    Faça upload de um arquivo <strong>Excel (.xlsx, .xls)</strong> ou <strong>CSV</strong> com duas colunas: <strong>Nome</strong> e <strong>Turma</strong>.
-                    A primeira linha deve ser o cabeçalho. Os alunos serão cadastrados automaticamente.
+                    Faça upload de um arquivo <strong>Excel (.xlsx, .xls)</strong> ou <strong>CSV</strong>.<br>
+                    A planilha deve conter a coluna <strong>Nome</strong> (obrigatória). A coluna <strong>Turma</strong> é opcional (se não houver, o sistema usará a turma que você selecionar abaixo).
                 </p>
+                
+                <!-- SELEÇÃO DE TURMA ANTES DO UPLOAD -->
+                <div class="form-group" style="max-width: 350px; margin-bottom: 20px;">
+                    <label>Selecione a Turma Destes Alunos</label>
+                    <select id="turma-importacao">
+                        <option value="6º Ano A">6º Ano A</option>
+                        <option value="6º Ano B">6º Ano B</option>
+                        <option value="7º Ano A">7º Ano A</option>
+                        <option value="7º Ano B">7º Ano B</option>
+                        <option value="8º Ano A">8º Ano A</option>
+                        <option value="8º Ano B">8º Ano B</option>
+                        <option value="9º Ano A">9º Ano A</option>
+                        <option value="9º Ano B">9º Ano B</option>
+                    </select>
+                </div>
+
                 <div class="upload-area" id="upload-area" onclick="document.getElementById('arquivo-planilha').click()">
                     <i data-lucide="file-spreadsheet"></i>
                     <div class="titulo">Clique ou arraste o arquivo aqui</div>
@@ -876,12 +879,21 @@
         if (erro) {
             msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro ao salvar.';
             msg.className = "msg msg-error";
+            // Rola para o topo mesmo em caso de erro
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             msg.innerHTML = `<i data-lucide="check-circle"></i> Respostas para ${turmaSelecionada} salvas com sucesso!`;
             msg.className = "msg msg-success";
+            // Rola suavemente para o topo da página
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Efeito visual de destaque na mensagem
+            msg.style.transition = 'transform 0.3s ease';
+            msg.style.transform = 'scale(1.03)';
+            setTimeout(() => { msg.style.transform = 'scale(1)'; }, 300);
         }
         renderIcones();
-        setTimeout(() => { msg.classList.add('hidden'); }, 3500);
+        setTimeout(() => { msg.classList.add('hidden'); }, 4000);
     }
 
     function configurarFiltroTurmasHistorico() {
@@ -1106,12 +1118,14 @@
         renderIcones();
     }
 
-    // --- IMPORTAR PLANILHA (NOVO) ---
+    // --- IMPORTAR PLANILHA (ATUALIZADO) ---
     async function processarPlanilha(event) {
         const arquivo = event.target.files[0];
         if (!arquivo) return;
 
         const preview = document.getElementById('preview-planilha');
+        const turmaSelecionada = document.getElementById('turma-importacao').value;
+        
         preview.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Processando arquivo...</p>';
 
         try {
@@ -1128,13 +1142,13 @@
                     renderIcones(); return;
                 }
 
-                // Detecta os índices das colunas Nome e Turma (cabeçalho)
+                // Detecta os índices das colunas (cabeçalho)
                 const cabecalho = linhas[0].map(c => (c || '').toString().toLowerCase().trim());
                 const idxNome = cabecalho.findIndex(c => c.includes('nome') || c.includes('aluno'));
                 const idxTurma = cabecalho.findIndex(c => c.includes('turma') || c.includes('sala') || c.includes('classe'));
 
-                if (idxNome === -1 || idxTurma === -1) {
-                    preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> A planilha deve ter as colunas <strong>"Nome"</strong> e <strong>"Turma"</strong>.</div>';
+                if (idxNome === -1) {
+                    preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> A planilha deve ter pelo menos a coluna <strong>"Nome"</strong>.</div>';
                     renderIcones(); return;
                 }
 
@@ -1142,9 +1156,16 @@
                 const alunosParaCadastrar = [];
                 for (let i = 1; i < linhas.length; i++) {
                     const nome = (linhas[i][idxNome] || '').toString().trim();
-                    const turma = (linhas[i][idxTurma] || '').toString().trim();
-                    if (nome && turma) {
-                        alunosParaCadastrar.push({ nome, turma });
+                    
+                    // Se a planilha tiver coluna turma, usa ela. Se não, usa a turma selecionada no dropdown.
+                    let turmaDoAluno = turmaSelecionada;
+                    if (idxTurma !== -1) {
+                        const turmaPlanilha = (linhas[i][idxTurma] || '').toString().trim();
+                        if (turmaPlanilha) turmaDoAluno = turmaPlanilha;
+                    }
+
+                    if (nome) {
+                        alunosParaCadastrar.push({ nome: nome, turma: turmaDoAluno });
                     }
                 }
 
@@ -1155,14 +1176,14 @@
 
                 // Mostra preview
                 let html = `
-                    <div class="msg msg-success"><i data-lucide="check-circle"></i> <strong>${alunosParaCadastrar.length} alunos</strong> encontrados na planilha. Deseja cadastrar todos?</div>
+                    <div class="msg msg-success"><i data-lucide="check-circle"></i> <strong>${alunosParaCadastrar.length} alunos</strong> encontrados. Deseja cadastrar todos?</div>
                     <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 16px;">
                         <table class="preview-tabela">
-                            <thead><tr><th>#</th><th>Nome</th><th>Turma</th></tr></thead>
+                            <thead><tr><th>#</th><th>Nome</th><th>Turma (Destino)</th></tr></thead>
                             <tbody>
                 `;
                 alunosParaCadastrar.forEach((a, i) => {
-                    html += `<tr><td>${i + 1}</td><td>${a.nome}</td><td>${a.turma}</td></tr>`;
+                    html += `<tr><td>${i + 1}</td><td>${a.nome}</td><td><strong style="color: var(--primary);">${a.turma}</strong></td></tr>`;
                 });
                 html += `</tbody></table></div>`;
                 html += `<button class="btn-success" onclick='confirmarImportacao(${JSON.stringify(alunosParaCadastrar).replace(/'/g, "\\'")})'><i data-lucide="upload"></i> Confirmar Importação</button>`;
