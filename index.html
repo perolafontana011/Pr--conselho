@@ -877,23 +877,29 @@
         }
 
         if (erro) {
-            msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro ao salvar.';
+            msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro ao salvar. Tente novamente.';
             msg.className = "msg msg-error";
-            // Rola para o topo mesmo em caso de erro
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Rola para o topo imediatamente
+            window.scrollTo(0, 0);
         } else {
-            msg.innerHTML = `<i data-lucide="check-circle"></i> Respostas para ${turmaSelecionada} salvas com sucesso!`;
+            msg.innerHTML = `<i data-lucide="check-circle"></i> <strong>Sucesso!</strong> Respostas para ${turmaSelecionada} foram enviadas.`;
             msg.className = "msg msg-success";
-            // Rola suavemente para o topo da página
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Rola para o topo imediatamente
+            window.scrollTo(0, 0);
             
-            // Efeito visual de destaque na mensagem
-            msg.style.transition = 'transform 0.3s ease';
-            msg.style.transform = 'scale(1.03)';
-            setTimeout(() => { msg.style.transform = 'scale(1)'; }, 300);
+            // Efeito visual para chamar atenção
+            msg.style.transition = 'all 0.3s ease';
+            msg.style.transform = 'scale(1.02)';
+            msg.style.boxShadow = '0 10px 15px -3px rgba(5, 150, 105, 0.3)'; // Sombra verde
+            
+            setTimeout(() => { 
+                msg.style.transform = 'scale(1)'; 
+                msg.style.boxShadow = 'none';
+            }, 400);
         }
         renderIcones();
-        setTimeout(() => { msg.classList.add('hidden'); }, 4000);
+        // A mensagem some depois de 5 segundos
+        setTimeout(() => { msg.classList.add('hidden'); }, 5000);
     }
 
     function configurarFiltroTurmasHistorico() {
