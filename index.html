@@ -3,252 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Pré-Conselho Escolar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pré-Conselho Escolar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #eef2ff;
-            --secondary: #0ea5e9;
-            --success: #10b981;
-            --success-hover: #059669;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --warning: #f59e0b;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 12px;
-            --radius-sm: 8px;
-            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
-            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --primary: #1e3a8a; --primary-light: #3b82f6; --primary-soft: #eff6ff;
+            --accent: #059669; --accent-light: #10b981; --accent-soft: #ecfdf5;
+            --danger: #dc2626; --danger-soft: #fef2f2;
+            --warning: #d97706; --warning-soft: #fffbeb;
+            --bg-body: #f1f5f9; --bg-surface: #ffffff; --bg-subtle: #f8fafc;
+            --text-primary: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8;
+            --border: #e2e8f0; --border-strong: #cbd5e1;
+            --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.10), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+            --shadow-focus: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-        body { 
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            color: var(--text-main); 
-            display: flex; 
-            justify-content: center; 
-            padding: 40px 20px; 
-            min-height: 100vh; 
-            align-items: center; 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            background-image: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary); min-height: 100vh; display: flex; justify-content: center;
+            align-items: flex-start; padding: 32px 20px; -webkit-font-smoothing: antialiased;
         }
-
-        #app { 
-            width: 100%; 
-            max-width: 1100px; 
-            background: var(--surface); 
-            border-radius: var(--radius); 
-            box-shadow: var(--shadow-xl); 
-            overflow: hidden; 
-        }
-
-        .screen { display: none; padding: 50px; animation: fadeIn 0.4s ease; }
+        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; letter-spacing: -0.02em; }
+        #app { width: 100%; max-width: 1180px; background: var(--bg-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); overflow: hidden; border: 1px solid var(--border); }
+        .screen { display: none; padding: 48px; animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .screen.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #escolha-screen { text-align: center; padding: 80px 40px; }
-        #escolha-screen .logo { font-size: 3rem; margin-bottom: 20px; }
-        #escolha-screen h1 { color: var(--text-main); font-size: 2.2rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.5px; }
-        #escolha-screen p { color: var(--text-muted); margin-bottom: 50px; font-size: 1.1rem; }
-        
-        .botoes-perfil { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
-        .btn-perfil { 
-            background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius); 
-            padding: 45px 55px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-            min-width: 280px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
-        }
-        .btn-perfil::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0); transition: transform 0.3s ease;
-        }
-        .btn-perfil:hover::before { transform: scaleX(1); }
-        .btn-perfil:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: var(--shadow-xl); }
-        .btn-perfil .icone { font-size: 3.5rem; margin-bottom: 5px; }
-        .btn-perfil .titulo { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
-        .btn-perfil .desc { font-size: 0.9rem; color: var(--text-muted); text-align: center; line-height: 1.5; }
-
-        #login-screen { max-width: 480px; margin: 0 auto; padding: 40px 20px; }
-        .login-box { background: var(--surface); padding: 45px; border-radius: var(--radius); box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
-        .login-box .icone-topo { font-size: 3rem; text-align: center; margin-bottom: 15px; }
-        .login-box h1 { margin-bottom: 8px; color: var(--text-main); font-size: 1.6rem; text-align: center; font-weight: 800; }
-        .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 35px; font-size: 0.95rem; }
-        
-        .form-group { margin-bottom: 22px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
-        .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); 
-            font-size: 1rem; transition: all 0.2s ease; background: var(--surface); color: var(--text-main); font-family: 'Inter', sans-serif;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light);
-        }
-        .form-group textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
-        .form-group select[multiple] { min-height: 120px; padding: 8px; }
-        .form-group select[multiple] option { padding: 8px 12px; border-radius: 4px; margin-bottom: 2px; }
-        .form-group select[multiple] option:checked { background: var(--primary) linear-gradient(0deg, var(--primary), var(--primary)); color: white; }
-        
-        .input-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; font-style: italic; }
-
-        button { 
-            padding: 13px 24px; border: none; border-radius: var(--radius-sm); cursor: pointer; 
-            font-size: 0.95rem; font-weight: 600; transition: all 0.2s ease; 
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif;
-        }
-        .btn-primary { background: var(--primary); color: white; width: 100%; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: var(--danger-hover); transform: translateY(-1px); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: var(--success-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { background: var(--background); border-color: var(--text-muted); }
-        .btn-sm { padding: 7px 14px; font-size: 0.8rem; width: auto; border-radius: 6px; }
-        .btn-voltar { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-weight: 600; margin-bottom: 20px; font-size: 0.9rem; padding: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #escolha-screen { text-align: center; padding: 80px 40px; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); }
+        .brand-header { margin-bottom: 56px; }
+        .brand-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); border-radius: 24px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px; box-shadow: 0 12px 24px -8px rgba(30, 58, 138, 0.4); }
+        .brand-icon svg { width: 40px; height: 40px; color: white; stroke-width: 2; }
+        #escolha-screen h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 12px; }
+        #escolha-screen > p { font-size: 1.05rem; color: var(--text-secondary); }
+        .botoes-perfil { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; max-width: 780px; margin: 0 auto; }
+        .btn-perfil { flex: 1; min-width: 280px; background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 36px 28px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; align-items: center; gap: 16px; box-shadow: var(--shadow-sm); text-align: center; position: relative; overflow: hidden; }
+        .btn-perfil::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); transform: scaleX(0); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .btn-perfil:hover { border-color: var(--primary-light); transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+        .btn-perfil:hover::after { transform: scaleX(1); }
+        .btn-perfil .perfil-icone { width: 64px; height: 64px; background: var(--primary-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .btn-perfil:hover .perfil-icone { background: var(--primary); }
+        .btn-perfil .perfil-icone svg { width: 30px; height: 30px; color: var(--primary); stroke-width: 2; transition: color 0.3s ease; }
+        .btn-perfil:hover .perfil-icone svg { color: white; }
+        .btn-perfil .titulo { font-size: 1.25rem; font-weight: 700; font-family: 'Poppins', sans-serif; }
+        .btn-perfil .desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+        #login-screen { max-width: 460px; margin: 0 auto; padding: 48px 20px; }
+        .login-box { background: var(--bg-surface); padding: 48px 40px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+        .btn-voltar { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-weight: 500; margin-bottom: 24px; font-size: 0.875rem; padding: 6px 0; transition: color 0.2s; }
         .btn-voltar:hover { color: var(--primary); }
-
+        .btn-voltar svg { width: 16px; height: 16px; }
+        .login-icone { width: 64px; height: 64px; background: var(--primary-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .login-icone svg { width: 30px; height: 30px; color: var(--primary); stroke-width: 2; }
+        .login-box h1 { font-size: 1.5rem; text-align: center; font-weight: 700; margin-bottom: 6px; }
+        .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 32px; font-size: 0.9rem; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); font-size: 0.875rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: all 0.2s ease; background: var(--bg-surface); color: var(--text-primary); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: var(--shadow-focus); }
+        .form-group textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+        .form-group select[multiple] { min-height: 130px; padding: 8px; }
+        .form-group select[multiple] option { padding: 8px 12px; border-radius: 6px; margin-bottom: 2px; }
+        .form-group select[multiple] option:checked { background: var(--primary) linear-gradient(0deg, var(--primary), var(--primary)); color: white; }
+        .input-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+        .input-hint svg { width: 14px; height: 14px; }
+        button { padding: 12px 24px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        button svg { width: 18px; height: 18px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; box-shadow: 0 1px 2px rgba(30, 58, 138, 0.2); }
+        .btn-primary:hover:not(:disabled) { background: #1e40af; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25); }
+        .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; }
+        .btn-success { background: var(--accent); color: white; }
+        .btn-success:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #b91c1c; transform: translateY(-1px); }
+        .btn-outline { background: var(--bg-surface); border: 1.5px solid var(--border); color: var(--text-secondary); }
+        .btn-outline:hover { border-color: var(--primary-light); color: var(--primary); background: var(--primary-soft); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; }
+        .btn-sm svg { width: 14px; height: 14px; }
         .test-buttons { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--border); }
-        .test-buttons button { width: 100%; font-size: 0.85rem; padding: 10px; background: var(--background); color: var(--text-muted); border: 1px solid var(--border); }
-        .test-buttons button:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+        .test-buttons button { width: 100%; font-size: 0.8rem; padding: 10px; background: var(--bg-subtle); color: var(--text-muted); border: 1px solid var(--border); }
+        .test-buttons button:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary-light); }
+        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
+        .header h2 { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .header h2 svg { width: 24px; height: 24px; color: var(--primary); }
+        .header .subtitulo { color: var(--text-muted); font-size: 0.875rem; margin-top: 4px; }
+        .tag-turma { font-size: 0.75rem; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 12px; font-weight: 600; display: inline-block; margin-top: 6px; }
+        .user-badge { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: var(--bg-subtle); border-radius: 24px; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+        .user-badge svg { width: 16px; height: 16px; color: var(--primary); }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 25px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
-        .header h2 { color: var(--text-main); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
-        .header .tag-turma { font-size: 0.8rem; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 20px; font-weight: 600; margin-left: 10px; display: inline-block; margin-top: 5px; }
-        .user-info { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
-
-        .admin-controls, .prof-controls { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
-        .admin-controls button, .prof-controls button { flex: 1; min-width: 150px; }
-        .aba-ativa { background: var(--primary) !important; color: white !important; box-shadow: var(--shadow-md); }
-
-        .section-box { background: var(--background); padding: 30px; border-radius: var(--radius); margin-bottom: 25px; border: 1px solid var(--border); }
-        .section-box h3 { margin-bottom: 22px; color: var(--text-main); font-size: 1.15rem; font-weight: 700; }
-        .section-box p.descricao { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
-
-        .pergunta-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: var(--surface); padding: 18px 22px; border: 1px solid var(--border); 
-            border-radius: var(--radius-sm); margin-bottom: 12px; box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
+        /* ==================== BARRA DE ABAS REDESENHADA ==================== */
+        .admin-controls, .prof-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 32px;
+            background: transparent;
+            padding: 0;
+            border: none;
         }
-        .pergunta-item:hover { box-shadow: var(--shadow-md); border-color: var(--primary); transform: translateX(3px); }
-        .pergunta-item span { flex: 1; font-size: 0.95rem; color: var(--text-main); line-height: 1.5; padding-right: 15px; }
-        
-        .pergunta-bloco { 
-            margin-bottom: 25px; background: var(--surface); padding: 28px; border-radius: var(--radius); 
-            border: 1px solid var(--border); border-left: 5px solid var(--primary); box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
+        .admin-controls button, .prof-controls button {
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border);
+            color: var(--text-secondary);
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            min-height: 78px;
+            position: relative;
+            overflow: hidden;
         }
-        .pergunta-bloco:hover { box-shadow: var(--shadow-md); }
-        .pergunta-bloco label { font-weight: 600; display: block; margin-bottom: 15px; color: var(--text-main); font-size: 1rem; line-height: 1.6; }
-        
+        .admin-controls button svg, .prof-controls button svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 2;
+            transition: transform 0.25s ease;
+        }
+        .admin-controls button:hover, .prof-controls button:hover {
+            border-color: var(--primary-light);
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: var(--primary-soft);
+        }
+        .admin-controls button:hover svg, .prof-controls button:hover svg {
+            transform: scale(1.1);
+        }
+        .aba-ativa {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 8px 16px -4px rgba(30, 58, 138, 0.3) !important;
+        }
+        .aba-ativa svg { color: white !important; }
+        .aba-ativa:hover { transform: translateY(-3px); }
+
+        .section-box { background: var(--bg-subtle); padding: 28px; border-radius: var(--radius-md); margin-bottom: 24px; border: 1px solid var(--border); }
+        .section-box h3 { margin-bottom: 20px; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .section-box h3 svg { width: 20px; height: 20px; color: var(--primary); }
+        .section-box p.descricao { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+        .pergunta-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); padding: 18px 22px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; transition: all 0.2s ease; }
+        .pergunta-item:hover { box-shadow: var(--shadow-sm); border-color: var(--primary-light); transform: translateX(4px); }
+        .pergunta-item .num { width: 32px; height: 32px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; margin-right: 14px; }
+        .pergunta-item .texto { flex: 1; font-size: 0.95rem; line-height: 1.5; }
+        .pergunta-bloco { margin-bottom: 20px; background: var(--bg-surface); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border); border-left: 4px solid var(--primary); transition: all 0.2s ease; }
+        .pergunta-bloco:hover { box-shadow: var(--shadow-sm); border-left-color: var(--accent); }
+        .pergunta-bloco label { font-weight: 500; display: block; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.6; }
         .hidden { display: none !important; }
-        .msg { padding: 15px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center; font-weight: 600; font-size: 0.95rem; animation: fadeIn 0.3s ease; }
-        .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-
-        .turmas-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
-        .turma-checkbox { 
-            display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: var(--surface); 
-            border: 1.5px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 0.9rem; 
-            font-weight: 500; transition: all 0.2s ease;
-        }
-        .turma-checkbox:hover { border-color: var(--primary); }
+        .msg { padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 20px; font-weight: 500; font-size: 0.875rem; display: flex; align-items: center; gap: 10px; }
+        .msg svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .msg-success { background: var(--accent-soft); color: #065f46; border: 1px solid #a7f3d0; }
+        .msg-error { background: var(--danger-soft); color: #991b1b; border: 1px solid #fecaca; }
+        .turmas-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .turma-checkbox { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: 24px; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease; user-select: none; }
+        .turma-checkbox:hover { border-color: var(--primary-light); }
         .turma-checkbox input { cursor: pointer; accent-color: var(--primary); }
-        .turma-checkbox.ativa { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
-
-        .resposta-card { 
-            margin-bottom: 22px; background: var(--surface); padding: 20px; border-radius: var(--radius-sm); 
-            border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm);
-        }
-        .resposta-card .pergunta { font-weight: 700; color: var(--text-main); font-size: 0.95rem; margin-bottom: 8px; line-height: 1.5; }
-        .resposta-card .resposta { font-size: 1rem; color: var(--text-main); line-height: 1.6; }
-        
-        .filtros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .turma-checkbox.ativa { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+        .resposta-card { margin-bottom: 16px; background: var(--bg-surface); padding: 20px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary-light); border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .resposta-card .pergunta { font-weight: 600; color: var(--primary); font-size: 0.85rem; margin-bottom: 8px; line-height: 1.5; text-transform: uppercase; letter-spacing: 0.3px; }
+        .resposta-card .resposta { font-size: 0.95rem; line-height: 1.6; }
+        .filtros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         @media (max-width: 600px) { .filtros-grid { grid-template-columns: 1fr; } }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px; }
         @media (max-width: 700px) { .stats-grid { grid-template-columns: 1fr; } }
-        
-        .stat-card { background: var(--surface); padding: 25px; border-radius: var(--radius); text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: all 0.2s ease; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-        .stat-card .numero { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 8px; }
-        .stat-card .label { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-card.positivo .numero { color: var(--success); }
+        .stat-card { background: var(--bg-surface); padding: 28px 20px; border-radius: var(--radius-md); text-align: center; border: 1px solid var(--border); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .stat-card.positivo::before { background: var(--accent); }
+        .stat-card.negativo::before { background: var(--danger); }
+        .stat-card.neutro::before { background: var(--warning); }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .stat-card .numero { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+        .stat-card.positivo .numero { color: var(--accent); }
         .stat-card.negativo .numero { color: var(--danger); }
         .stat-card.neutro .numero { color: var(--warning); }
+        .stat-card .label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
         .stat-card .detalhe { font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; }
-
-        .barra-progresso { width: 100%; height: 30px; background: var(--border); border-radius: 15px; overflow: hidden; display: flex; margin: 20px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
-        .barra-progresso .segmento { display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.85rem; transition: width 0.6s ease; }
-        .segmento.positivo { background: linear-gradient(90deg, #10b981, #34d399); }
-        .segmento.negativo { background: linear-gradient(90deg, #ef4444, #f87171); }
-        .segmento.neutro { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-
+        .barra-progresso { width: 100%; height: 36px; background: var(--border); border-radius: 18px; overflow: hidden; display: flex; margin: 20px 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
+        .barra-progresso .segmento { display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .segmento.positivo { background: linear-gradient(90deg, #059669, #10b981); }
+        .segmento.negativo { background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .segmento.neutro { background: linear-gradient(90deg, #d97706, #f59e0b); }
         .lista-mencoes { margin-top: 20px; }
-        .mencao-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; background: var(--surface); border-radius: var(--radius-sm); margin-bottom: 8px; border-left: 4px solid var(--border); font-size: 0.9rem; }
-        .mencao-item.positiva { border-left-color: var(--success); }
-        .mencao-item.negativa { border-left-color: var(--danger); }
-        .mencao-item .turma { font-weight: 600; color: var(--text-main); }
-        .mencao-item .badge { font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; font-weight: 700; text-transform: uppercase; }
-        .badge.positivo { background: #d1fae5; color: #065f46; }
-        .badge.negativo { background: #fee2e2; color: #991b1b; }
-
-        .loader { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        .mencao-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--bg-surface); border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border); border-left: 3px solid var(--border); font-size: 0.9rem; transition: all 0.2s ease; }
+        .mencao-item:hover { box-shadow: var(--shadow-xs); }
+        .mencao-item .turma { font-weight: 600; }
+        .mencao-item .badge { font-size: 0.75rem; padding: 4px 12px; border-radius: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .badge.positivo { background: var(--accent-soft); color: #065f46; }
+        .badge.negativo { background: var(--danger-soft); color: #991b1b; }
+        .loader { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .alunos-votacao { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
+        .aluno-voto { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s ease; user-select: none; font-size: 0.9rem; }
+        .aluno-voto:hover { border-color: var(--primary-light); }
+        .aluno-voto.bom { border-color: var(--accent); background: var(--accent-soft); color: #065f46; font-weight: 600; }
+        .aluno-voto.ruim { border-color: var(--danger); background: var(--danger-soft); color: #991b1b; font-weight: 600; }
+        .aluno-voto input { cursor: pointer; accent-color: var(--primary); }
+        .aluno-voto .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .ranking-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-pos { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0; }
+        .ranking-pos.gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+        .ranking-pos.silver { background: linear-gradient(135deg, #cbd5e1, #94a3b8); color: white; }
+        .ranking-pos.bronze { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; }
+        .ranking-info { flex: 1; }
+        .ranking-nome { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+        .ranking-barra { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .ranking-barra div { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+        .ranking-barra div.bom { background: linear-gradient(90deg, #059669, #10b981); }
+        .ranking-barra div.ruim { background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .ranking-votos { font-weight: 700; font-size: 0.9rem; color: var(--text-secondary); min-width: 60px; text-align: right; }
+
+        /* ==================== IMPORTAR PLANILHA (NOVO) ==================== */
+        .upload-area {
+            border: 2px dashed var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--bg-surface);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+        .upload-area.dragover { transform: scale(1.01); }
+        .upload-area svg { width: 48px; height: 48px; color: var(--primary); margin-bottom: 12px; }
+        .upload-area .titulo { font-weight: 700; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 6px; }
+        .upload-area .hint { font-size: 0.85rem; color: var(--text-muted); }
+        .upload-area input[type="file"] { display: none; }
+
+        .preview-tabela { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.85rem; }
+        .preview-tabela th { background: var(--primary); color: white; padding: 10px; text-align: left; font-weight: 600; }
+        .preview-tabela td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+        .preview-tabela tr:hover { background: var(--bg-subtle); }
 
         @media print {
             body { background: white; padding: 0; display: block; }
-            #app { box-shadow: none; max-width: 100%; border-radius: 0; }
+            #app { box-shadow: none; max-width: 100%; border-radius: 0; border: none; }
             .no-print { display: none !important; }
             .screen { padding: 0; }
             .section-box { border: none; padding: 0; background: white; }
-            .pergunta-bloco, .resposta-card { border-left: none; border-bottom: 1px solid #ccc; border-radius: 0; padding: 15px 0; box-shadow: none; }
-            .admin-controls { display: none !important; }
         }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <!-- TELA 1: ESCOLHA DE PERFIL -->
+    <!-- ESCOLHA DE PERFIL -->
     <div id="escolha-screen" class="screen active">
-        <div class="logo">📚</div>
-        <h1>Pré-Conselho Escolar</h1>
-        <p>Selecione o seu perfil para continuar</p>
+        <div class="brand-header">
+            <div class="brand-icon"><i data-lucide="graduation-cap"></i></div>
+            <h1>Pré-Conselho Escolar</h1>
+            <p>Selecione o seu perfil para acessar o sistema</p>
+        </div>
         <div class="botoes-perfil">
             <div class="btn-perfil" onclick="irParaLogin('admin')">
-                <div class="icone">👨‍💼</div>
+                <div class="perfil-icone"><i data-lucide="shield-check"></i></div>
                 <div class="titulo">Administrador</div>
-                <div class="desc">Gerenciar perguntas, professores e visualizar respostas</div>
+                <div class="desc">Gerenciar perguntas, professores, alunos e visualizar respostas</div>
             </div>
             <div class="btn-perfil" onclick="irParaLogin('professor')">
-                <div class="icone">👩‍🏫</div>
+                <div class="perfil-icone"><i data-lucide="users"></i></div>
                 <div class="titulo">Professor</div>
                 <div class="desc">Responder ao formulário do conselho de classe</div>
             </div>
         </div>
     </div>
 
-    <!-- TELA 2: LOGIN -->
+    <!-- LOGIN -->
     <div id="login-screen" class="screen">
         <div class="login-box">
-            <button class="btn-voltar" onclick="voltarParaEscolha()">← Voltar para escolha de perfil</button>
-            <div class="icone-topo" id="login-icone">👨‍💼</div>
+            <button class="btn-voltar" onclick="voltarParaEscolha()"><i data-lucide="arrow-left"></i> Voltar</button>
+            <div class="login-icone" id="login-icone"><i data-lucide="shield-check"></i></div>
             <h1 id="login-titulo">Login</h1>
             <p class="subtitulo" id="login-subtitulo">Entre com suas credenciais</p>
             <div id="login-msg" class="msg hidden"></div>
@@ -258,34 +302,40 @@
             </div>
             <div class="form-group">
                 <label>Senha</label>
-                <input type="password" id="login-pass" placeholder="******">
+                <input type="password" id="login-pass" placeholder="••••••••">
             </div>
-            <button class="btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
+            <button class="btn-primary" id="btn-login" onclick="fazerLogin()"><i data-lucide="log-in"></i> Entrar</button>
             <div class="test-buttons">
-                <button type="button" onclick="preencherTeste()">Preencher Credenciais de Teste</button>
+                <button type="button" onclick="preencherTeste()"><i data-lucide="flask-conical"></i> Preencher Credenciais de Teste</button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DO PROFESSOR -->
+    <!-- PROFESSOR -->
     <div id="professor-screen" class="screen">
         <div class="header no-print">
             <div>
-                <h2>Olá, <span id="prof-nome"></span></h2>
-                <span class="tag-turma" id="prof-turmas-tag">Minhas Turmas</span>
+                <h2><i data-lucide="users"></i> Olá, <span id="prof-nome"></span></h2>
+                <span class="tag-turma" id="prof-turmas-tag">Carregando turmas...</span>
             </div>
-            <button class="btn-outline" onclick="logout()">Sair</button>
+            <button class="btn-outline" onclick="logout()"><i data-lucide="log-out"></i> Sair</button>
         </div>
         <div class="prof-controls no-print">
-            <button id="btn-aba-responder" class="btn-primary" onclick="mostrarAbaProfessor('responder')">Responder Formulário</button>
-            <button id="btn-aba-historico" class="btn-outline" onclick="mostrarAbaProfessor('historico')">Meu Histórico</button>
-            <button id="btn-aba-turmas" class="btn-outline" onclick="mostrarAbaProfessor('turmas')">Minhas Turmas</button>
+            <button id="btn-aba-responder" class="aba-ativa" onclick="mostrarAbaProfessor('responder')">
+                <i data-lucide="file-text"></i> Responder
+            </button>
+            <button id="btn-aba-historico" onclick="mostrarAbaProfessor('historico')">
+                <i data-lucide="history"></i> Histórico
+            </button>
+            <button id="btn-aba-turmas" onclick="mostrarAbaProfessor('turmas')">
+                <i data-lucide="school"></i> Minhas Turmas
+            </button>
         </div>
 
         <div id="aba-prof-responder" class="aba-prof-content">
             <div id="prof-msg" class="msg hidden no-print"></div>
             <div class="section-box no-print">
-                <h3>Selecione a Turma</h3>
+                <h3><i data-lucide="mouse-pointer-click"></i> Selecione a Turma</h3>
                 <p class="descricao">Escolha para qual turma você deseja responder o formulário:</p>
                 <div class="form-group">
                     <select id="turma-responder" onchange="carregarFormularioProfessor()"></select>
@@ -293,13 +343,15 @@
             </div>
             <form id="form-professor" onsubmit="salvarRespostas(event)">
                 <div id="perguntas-container"><p style="text-align:center; color: var(--text-muted);">Carregando perguntas...</p></div>
-                <button type="submit" class="btn-primary no-print" style="margin-top:30px; max-width: 300px; margin-left: auto; margin-right: auto;">Salvar Respostas</button>
+                <button type="submit" class="btn-primary no-print" style="margin-top:30px; max-width: 300px; margin-left: auto; margin-right: auto;">
+                    <i data-lucide="save"></i> Salvar Respostas
+                </button>
             </form>
         </div>
 
         <div id="aba-prof-historico" class="aba-prof-content hidden">
             <div class="section-box no-print">
-                <h3>Filtrar Histórico</h3>
+                <h3><i data-lucide="filter"></i> Filtrar Histórico</h3>
                 <div class="form-group">
                     <label>Turma:</label>
                     <select id="filtro-turma-prof" onchange="renderizarHistoricoProfessor()">
@@ -312,48 +364,137 @@
 
         <div id="aba-prof-turmas" class="aba-prof-content hidden">
             <div class="section-box">
-                <h3>Minhas Turmas</h3>
-                <p class="descricao">Marque as turmas que você leciona. Elas aparecerão na sua lista de respostas.</p>
+                <h3><i data-lucide="school"></i> Minhas Turmas</h3>
+                <p class="descricao">Marque as turmas que você leciona.</p>
                 <div id="turmas-prof-container" class="turmas-container"></div>
-                <button class="btn-success" style="margin-top: 20px; max-width: 250px;" onclick="salvarTurmasProfessor()">Salvar Turmas</button>
+                <button class="btn-success" style="margin-top: 20px; max-width: 250px;" onclick="salvarTurmasProfessor()">
+                    <i data-lucide="save"></i> Salvar Turmas
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- TELA DO ADMINISTRADOR -->
+    <!-- ADMINISTRADOR -->
     <div id="admin-screen" class="screen">
         <div class="header no-print">
-            <h2>Painel do Administrador</h2>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span class="user-info">Logado como Admin</span>
-                <button class="btn-outline" onclick="logout()">Sair</button>
+            <div>
+                <h2><i data-lucide="shield-check"></i> Painel do Administrador</h2>
+                <span class="subtitulo">Gerenciamento completo do sistema</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="user-badge"><i data-lucide="user-check"></i> Admin</div>
+                <button class="btn-outline" onclick="logout()"><i data-lucide="log-out"></i> Sair</button>
             </div>
         </div>
+
         <div class="admin-controls no-print">
-            <button id="btn-aba-gerenciar" class="btn-primary" onclick="mostrarAbaAdmin('gerenciar-perguntas')">Gerenciar Perguntas</button>
-            <button id="btn-aba-cadastrar" class="btn-outline" onclick="mostrarAbaAdmin('cadastrar-prof')">Cadastrar Professor</button>
-            <button id="btn-aba-respostas" class="btn-outline" onclick="mostrarAbaAdmin('ver-respostas')">Ver Respostas</button>
-            <button id="btn-aba-estatisticas" class="btn-outline" onclick="mostrarAbaAdmin('estatisticas')">📊 Estatísticas</button>
-            <button class="btn-success" onclick="window.print()">Imprimir / PDF</button>
+            <button id="btn-aba-gerenciar" class="aba-ativa" onclick="mostrarAbaAdmin('gerenciar-perguntas')">
+                <i data-lucide="list-checks"></i> Perguntas
+            </button>
+            <button id="btn-aba-alunos" onclick="mostrarAbaAdmin('gerenciar-alunos')">
+                <i data-lucide="user-plus"></i> Alunos
+            </button>
+            <button id="btn-aba-cadastrar" onclick="mostrarAbaAdmin('cadastrar-prof')">
+                <i data-lucide="users"></i> Professores
+            </button>
+            <button id="btn-aba-respostas" onclick="mostrarAbaAdmin('ver-respostas')">
+                <i data-lucide="inbox"></i> Respostas
+            </button>
+            <button id="btn-aba-estatisticas" onclick="mostrarAbaAdmin('estatisticas')">
+                <i data-lucide="bar-chart-3"></i> Estatísticas
+            </button>
+            <button id="btn-aba-ranking" onclick="mostrarAbaAdmin('ranking')">
+                <i data-lucide="trophy"></i> Ranking
+            </button>
         </div>
 
+        <!-- ABA: Gerenciar Perguntas -->
         <div id="aba-gerenciar-perguntas" class="aba-admin-content">
             <div class="section-box no-print">
-                <h3>Adicionar Nova Pergunta</h3>
+                <h3><i data-lucide="plus-circle"></i> Adicionar Nova Pergunta</h3>
                 <div class="form-group">
                     <input type="text" id="nova-pergunta-texto" placeholder="Digite a pergunta aqui...">
                 </div>
-                <button class="btn-primary" style="max-width: 250px;" onclick="adicionarPergunta()">Adicionar Pergunta</button>
+                <button class="btn-primary" style="max-width: 250px;" onclick="adicionarPergunta()">
+                    <i data-lucide="plus"></i> Adicionar
+                </button>
             </div>
             <div class="section-box">
-                <h3>Perguntas Ativas</h3>
+                <h3><i data-lucide="clipboard-list"></i> Perguntas Ativas</h3>
                 <div id="lista-perguntas-admin"></div>
             </div>
         </div>
 
+        <!-- ABA: Alunos (COM IMPORTAÇÃO) -->
+        <div id="aba-gerenciar-alunos" class="aba-admin-content hidden">
+            <!-- Cadastro manual -->
+            <div class="section-box no-print">
+                <h3><i data-lucide="user-plus"></i> Cadastrar Aluno Manualmente</h3>
+                <div class="filtros-grid">
+                    <div class="form-group">
+                        <label>Nome do Aluno</label>
+                        <input type="text" id="aluno-nome-cad" placeholder="Ex: Maria Eduarda Silva">
+                    </div>
+                    <div class="form-group">
+                        <label>Turma</label>
+                        <select id="aluno-turma-cad">
+                            <option value="6º Ano A">6º Ano A</option>
+                            <option value="6º Ano B">6º Ano B</option>
+                            <option value="7º Ano A">7º Ano A</option>
+                            <option value="7º Ano B">7º Ano B</option>
+                            <option value="8º Ano A">8º Ano A</option>
+                            <option value="8º Ano B">8º Ano B</option>
+                            <option value="9º Ano A">9º Ano A</option>
+                            <option value="9º Ano B">9º Ano B</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-success" style="max-width: 250px;" onclick="cadastrarAluno()">
+                    <i data-lucide="plus"></i> Cadastrar Aluno
+                </button>
+            </div>
+
+            <!-- IMPORTAR PLANILHA -->
+            <div class="section-box no-print">
+                <h3><i data-lucide="upload"></i> Importar Planilha de Alunos</h3>
+                <p class="descricao">
+                    Faça upload de um arquivo <strong>Excel (.xlsx, .xls)</strong> ou <strong>CSV</strong> com duas colunas: <strong>Nome</strong> e <strong>Turma</strong>.
+                    A primeira linha deve ser o cabeçalho. Os alunos serão cadastrados automaticamente.
+                </p>
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('arquivo-planilha').click()">
+                    <i data-lucide="file-spreadsheet"></i>
+                    <div class="titulo">Clique ou arraste o arquivo aqui</div>
+                    <div class="hint">Formatos aceitos: .xlsx, .xls, .csv</div>
+                    <input type="file" id="arquivo-planilha" accept=".xlsx,.xls,.csv" onchange="processarPlanilha(event)">
+                </div>
+                <div id="preview-planilha" style="margin-top: 20px;"></div>
+            </div>
+
+            <!-- LISTA DE ALUNOS -->
+            <div class="section-box">
+                <h3><i data-lucide="users"></i> Alunos Cadastrados</h3>
+                <div class="form-group" style="max-width: 300px;">
+                    <label>Filtrar por Turma:</label>
+                    <select id="filtro-alunos-turma" onchange="renderizarAlunosAdmin()">
+                        <option value="Todas">Todas as Turmas</option>
+                        <option value="6º Ano A">6º Ano A</option>
+                        <option value="6º Ano B">6º Ano B</option>
+                        <option value="7º Ano A">7º Ano A</option>
+                        <option value="7º Ano B">7º Ano B</option>
+                        <option value="8º Ano A">8º Ano A</option>
+                        <option value="8º Ano B">8º Ano B</option>
+                        <option value="9º Ano A">9º Ano A</option>
+                        <option value="9º Ano B">9º Ano B</option>
+                    </select>
+                </div>
+                <div id="lista-alunos-admin"></div>
+            </div>
+        </div>
+
+        <!-- ABA: Cadastrar Professor -->
         <div id="aba-cadastrar-prof" class="aba-admin-content hidden">
             <div class="section-box">
-                <h3>Cadastrar Novo Professor</h3>
+                <h3><i data-lucide="user-plus"></i> Cadastrar Novo Professor</h3>
                 <div class="form-group">
                     <label>Nome do Professor</label>
                     <input type="text" id="prof-nome-cad" placeholder="Ex: João Silva">
@@ -368,7 +509,7 @@
                 </div>
                 <div class="form-group">
                     <label>Turmas que leciona</label>
-                    <p class="input-hint">Segure Ctrl (Windows) ou Cmd (Mac) para selecionar várias turmas</p>
+                    <p class="input-hint"><i data-lucide="info"></i> Segure Ctrl (Windows) ou Cmd (Mac) para selecionar várias turmas</p>
                     <select id="prof-turmas-cad" multiple>
                         <option value="6º Ano A">6º Ano A</option>
                         <option value="6º Ano B">6º Ano B</option>
@@ -380,13 +521,16 @@
                         <option value="9º Ano B">9º Ano B</option>
                     </select>
                 </div>
-                <button class="btn-success" style="max-width: 250px;" onclick="cadastrarProfessor()">Cadastrar Professor</button>
+                <button class="btn-success" style="max-width: 250px;" onclick="cadastrarProfessor()">
+                    <i data-lucide="user-plus"></i> Cadastrar Professor
+                </button>
             </div>
         </div>
 
+        <!-- ABA: Ver Respostas -->
         <div id="aba-ver-respostas" class="aba-admin-content hidden">
             <div class="section-box no-print">
-                <h3>Filtrar Respostas</h3>
+                <h3><i data-lucide="filter"></i> Filtrar Respostas</h3>
                 <div class="filtros-grid">
                     <div class="form-group">
                         <label>Professor:</label>
@@ -413,9 +557,10 @@
             <div id="respostas-container"></div>
         </div>
 
+        <!-- ABA: Estatísticas -->
         <div id="aba-estatisticas" class="aba-admin-content hidden">
             <div class="section-box no-print">
-                <h3>Filtrar Estatísticas</h3>
+                <h3><i data-lucide="bar-chart-3"></i> Filtrar Estatísticas</h3>
                 <div class="form-group" style="max-width: 300px;">
                     <label>Turma:</label>
                     <select id="filtro-turma-stats" onchange="renderizarEstatisticas()">
@@ -433,13 +578,45 @@
             </div>
             <div id="estatisticas-container"></div>
         </div>
+
+        <!-- ABA: Ranking -->
+        <div id="aba-ranking" class="aba-admin-content hidden">
+            <div class="section-box no-print">
+                <h3><i data-lucide="filter"></i> Filtros do Ranking</h3>
+                <div class="filtros-grid">
+                    <div class="form-group">
+                        <label>Turma:</label>
+                        <select id="filtro-ranking-turma" onchange="renderizarRanking()">
+                            <option value="Todas">Todas as Turmas</option>
+                            <option value="6º Ano A">6º Ano A</option>
+                            <option value="6º Ano B">6º Ano B</option>
+                            <option value="7º Ano A">7º Ano A</option>
+                            <option value="7º Ano B">7º Ano B</option>
+                            <option value="8º Ano A">8º Ano A</option>
+                            <option value="8º Ano B">8º Ano B</option>
+                            <option value="9º Ano A">9º Ano A</option>
+                            <option value="9º Ano B">9º Ano B</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo:</label>
+                        <select id="filtro-ranking-tipo" onchange="renderizarRanking()">
+                            <option value="bom">🏆 Mais votados como BONS</option>
+                            <option value="ruim">⚠️ Mais votados como RUINS</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="section-box">
+                <h3 id="ranking-titulo"><i data-lucide="trophy"></i> Ranking dos Alunos</h3>
+                <div id="ranking-container"></div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // CONEXÃO COM O SUPABASE
-    // ==========================================
+    // ===================== SUPABASE =====================
     const SUPABASE_URL = 'https://dzvdjfahthbieuyhktzm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6dmRqZmFodGhiaWV1eWhrdHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDMyMTIsImV4cCI6MjEwNzcxOTIxMn0.CSCNC0Ui_n5pNEhIBbY-g2V8fWPpPB0IIljUHOMv68w';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -452,27 +629,37 @@
     let usuarioLogado = null;
     let tipoLoginAtual = '';
 
-    // ==========================================
-    // FUNÇÕES DE LOGIN E NAVEGAÇÃO
-    // ==========================================
+    function renderIcones() {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function ehPerguntaBons(texto) {
+        const t = texto.toLowerCase();
+        return t.includes('bons') || t.includes('se destacaram positivamente') || t.includes('melhores alunos');
+    }
+    function ehPerguntaRuins(texto) {
+        const t = texto.toLowerCase();
+        return t.includes('ruins') || t.includes('dificuldades significativas') || t.includes('piores alunos');
+    }
+
+    // ===================== NAVEGAÇÃO =====================
     function irParaLogin(tipo) {
         tipoLoginAtual = tipo;
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById('login-screen').classList.add('active');
-        
         document.getElementById('login-msg').classList.add('hidden');
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
-        
         if (tipo === 'admin') {
-            document.getElementById('login-icone').innerText = '👨‍💼';
+            document.getElementById('login-icone').innerHTML = '<i data-lucide="shield-check"></i>';
             document.getElementById('login-titulo').innerText = 'Login do Administrador';
             document.getElementById('login-subtitulo').innerText = 'Acesse o painel de gerenciamento';
         } else {
-            document.getElementById('login-icone').innerText = '👩‍🏫';
+            document.getElementById('login-icone').innerHTML = '<i data-lucide="users"></i>';
             document.getElementById('login-titulo').innerText = 'Login do Professor';
             document.getElementById('login-subtitulo').innerText = 'Acesse o formulário do conselho';
         }
+        renderIcones();
     }
 
     function voltarParaEscolha() {
@@ -495,39 +682,22 @@
         const senha = document.getElementById('login-pass').value;
         const msg = document.getElementById('login-msg');
         const btnLogin = document.getElementById('btn-login');
-
         if (!email || !senha) {
-            msg.innerText = "Preencha o e-mail e a senha!";
-            msg.className = "msg msg-error";
-            msg.classList.remove('hidden');
-            return;
+            msg.innerHTML = '<i data-lucide="alert-circle"></i> Preencha o e-mail e a senha!';
+            msg.className = "msg msg-error"; msg.classList.remove('hidden'); renderIcones(); return;
         }
-
-        btnLogin.innerHTML = '<span class="loader"></span>';
-        btnLogin.disabled = true;
-
-        const { data: usuarios, error } = await supabaseClient
-            .from('usuarios')
-            .select('*')
-            .eq('email', email)
-            .eq('senha', senha)
-            .eq('tipo', tipoLoginAtual);
-
+        btnLogin.innerHTML = '<span class="loader"></span>'; btnLogin.disabled = true;
+        const { data: usuarios, error } = await supabaseClient.from('usuarios').select('*').eq('email', email).eq('senha', senha).eq('tipo', tipoLoginAtual);
         if (error) {
             console.error(error);
-            msg.innerText = "Erro ao conectar com o banco de dados.";
-            msg.className = "msg msg-error";
-            msg.classList.remove('hidden');
-            btnLogin.innerHTML = 'Entrar';
-            btnLogin.disabled = false;
-            return;
+            msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro: ' + error.message;
+            msg.className = "msg msg-error"; msg.classList.remove('hidden');
+            btnLogin.innerHTML = '<i data-lucide="log-in"></i> Entrar'; btnLogin.disabled = false; renderIcones(); return;
         }
-
         if (usuarios && usuarios.length > 0) {
             usuarioLogado = usuarios[0];
             msg.classList.add('hidden');
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            
             if (usuarioLogado.tipo === 'admin') {
                 document.getElementById('admin-screen').classList.add('active');
                 await mostrarAbaAdmin('gerenciar-perguntas');
@@ -538,13 +708,10 @@
                 await mostrarAbaProfessor('responder');
             }
         } else {
-            msg.innerText = "E-mail ou senha incorretos!";
-            msg.className = "msg msg-error";
-            msg.classList.remove('hidden');
+            msg.innerHTML = '<i data-lucide="x-circle"></i> E-mail ou senha incorretos!';
+            msg.className = "msg msg-error"; msg.classList.remove('hidden');
         }
-
-        btnLogin.innerHTML = 'Entrar';
-        btnLogin.disabled = false;
+        btnLogin.innerHTML = '<i data-lucide="log-in"></i> Entrar'; btnLogin.disabled = false; renderIcones();
     }
 
     function logout() {
@@ -559,65 +726,31 @@
     function atualizarTagTurmasProfessor() {
         const tag = document.getElementById('prof-turmas-tag');
         if (usuarioLogado.turmas && usuarioLogado.turmas.length > 0) {
-            tag.innerText = `Turmas: ${usuarioLogado.turmas.join(', ')}`;
+            tag.innerText = `Turmas: ${usuarioLogado.turmas.join(' • ')}`;
         } else {
             tag.innerText = 'Nenhuma turma cadastrada';
         }
     }
 
-    // ==========================================
-    // NAVEGAÇÃO DO PROFESSOR
-    // ==========================================
+    // ===================== PROFESSOR =====================
     async function mostrarAbaProfessor(aba) {
         document.querySelectorAll('.aba-prof-content').forEach(el => el.classList.add('hidden'));
         document.getElementById('aba-prof-' + aba).classList.remove('hidden');
-
-        const botoes = {
-            responder: document.getElementById('btn-aba-responder'),
-            historico: document.getElementById('btn-aba-historico'),
-            turmas: document.getElementById('btn-aba-turmas')
-        };
-
-        Object.keys(botoes).forEach(k => {
-            botoes[k].className = (k === aba) ? 'btn-primary aba-ativa' : 'btn-outline';
-        });
-
-        if (aba === 'responder') {
-            await configurarSelectTurmasResponder();
-            await carregarFormularioProfessor();
-        } else if (aba === 'historico') {
-            configurarFiltroTurmasHistorico();
-            await renderizarHistoricoProfessor();
-        } else if (aba === 'turmas') {
-            renderizarTurmasProfessor();
-        }
+        const botoes = { responder: document.getElementById('btn-aba-responder'), historico: document.getElementById('btn-aba-historico'), turmas: document.getElementById('btn-aba-turmas') };
+        Object.keys(botoes).forEach(k => botoes[k].className = (k === aba) ? 'aba-ativa' : '');
+        if (aba === 'responder') { await configurarSelectTurmasResponder(); await carregarFormularioProfessor(); }
+        else if (aba === 'historico') { configurarFiltroTurmasHistorico(); await renderizarHistoricoProfessor(); }
+        else if (aba === 'turmas') { renderizarTurmasProfessor(); }
+        renderIcones();
     }
 
     async function configurarSelectTurmasResponder() {
         const select = document.getElementById('turma-responder');
         select.innerHTML = '';
-        
-        const { data, error } = await supabaseClient
-            .from('usuarios')
-            .select('turmas')
-            .eq('id', usuarioLogado.id)
-            .single();
-        
-        if (!error && data) {
-            usuarioLogado.turmas = data.turmas || [];
-        }
-
-        if (!usuarioLogado.turmas || usuarioLogado.turmas.length === 0) {
-            select.innerHTML = '<option value="">Nenhuma turma cadastrada</option>';
-            return;
-        }
-
-        usuarioLogado.turmas.forEach(t => {
-            const opt = document.createElement('option');
-            opt.value = t;
-            opt.textContent = t;
-            select.appendChild(opt);
-        });
+        const { data, error } = await supabaseClient.from('usuarios').select('turmas').eq('id', usuarioLogado.id).single();
+        if (!error && data) usuarioLogado.turmas = data.turmas || [];
+        if (!usuarioLogado.turmas || usuarioLogado.turmas.length === 0) { select.innerHTML = '<option value="">Nenhuma turma cadastrada</option>'; return; }
+        usuarioLogado.turmas.forEach(t => { const opt = document.createElement('option'); opt.value = t; opt.textContent = t; select.appendChild(opt); });
     }
 
     async function carregarFormularioProfessor() {
@@ -625,79 +758,129 @@
         const turmaSelecionada = document.getElementById('turma-responder').value;
         document.getElementById('prof-msg').classList.add('hidden');
         container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando perguntas...</p>';
+        if (!turmaSelecionada) { container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você não tem turma cadastrada.</p></div>'; return; }
 
-        if (!turmaSelecionada) {
-            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você não tem nenhuma turma cadastrada. Vá em "Minhas Turmas" para adicionar.</p></div>';
-            return;
-        }
-
-        const [resPerguntas, resRespostas] = await Promise.all([
+        const [resPerguntas, resRespostas, resAlunos, resVotos] = await Promise.all([
             supabaseClient.from('perguntas').select('*').order('id'),
-            supabaseClient.from('respostas').select('*').eq('professor_id', usuarioLogado.id).eq('turma', turmaSelecionada)
+            supabaseClient.from('respostas').select('*').eq('professor_id', usuarioLogado.id).eq('turma', turmaSelecionada),
+            supabaseClient.from('alunos').select('*').eq('turma', turmaSelecionada).order('nome'),
+            supabaseClient.from('votos_alunos').select('*').eq('professor_id', usuarioLogado.id).eq('turma', turmaSelecionada)
         ]);
 
         const perguntas = resPerguntas.data || [];
         const respostasDoProf = resRespostas.data || [];
+        const alunos = resAlunos.data || [];
+        const votosDoProf = resVotos.data || [];
 
         container.innerHTML = '';
-
-        if (perguntas.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta disponível no momento.</p>';
-            return;
-        }
+        if (perguntas.length === 0) { container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta disponível.</p>'; return; }
 
         const header = document.createElement('div');
         header.className = 'section-box';
-        header.innerHTML = `<h3 style="margin: 0;">📝 Respondendo para: <span style="color: var(--primary);">${turmaSelecionada}</span></h3>`;
+        header.innerHTML = `<h3 style="margin: 0;"><i data-lucide="edit-3"></i> Respondendo para: <span style="color: var(--primary);">${turmaSelecionada}</span></h3>`;
         container.appendChild(header);
 
         perguntas.forEach(p => {
             const respostaAntiga = respostasDoProf.find(r => r.pergunta_id === p.id);
             const valor = respostaAntiga ? respostaAntiga.resposta : '';
-
             const div = document.createElement('div');
             div.className = 'pergunta-bloco';
-            div.innerHTML = `
-                <label>${p.texto}</label>
-                <textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>
-            `;
+
+            if (ehPerguntaBons(p.texto) || ehPerguntaRuins(p.texto)) {
+                const tipo = ehPerguntaBons(p.texto) ? 'bom' : 'ruim';
+                const votosDessa = votosDoProf.filter(v => v.tipo_voto === tipo).map(v => v.aluno_id);
+
+                if (alunos.length === 0) {
+                    div.innerHTML = `<label>${p.texto}</label><p style="color: var(--text-muted); font-size: 0.85rem;">Nenhum aluno cadastrado nesta turma. Peça ao administrador para cadastrar.</p>`;
+                } else {
+                    let html = `<label>${p.texto} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">(clique nos alunos para votar)</span></label>`;
+                    html += '<div class="alunos-votacao">';
+                    alunos.forEach(a => {
+                        const votado = votosDessa.includes(a.id);
+                        const iniciais = a.nome.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+                        html += `
+                            <label class="aluno-voto ${votado ? tipo : ''}" data-aluno-id="${a.id}" data-tipo="${tipo}">
+                                <input type="checkbox" ${votado ? 'checked' : ''} onchange="this.parentElement.classList.toggle('${tipo}', this.checked)">
+                                <div class="avatar">${iniciais}</div>
+                                <span>${a.nome}</span>
+                            </label>
+                        `;
+                    });
+                    html += '</div>';
+                    div.innerHTML = html;
+                }
+            } else {
+                div.innerHTML = `<label>${p.texto}</label><textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>`;
+            }
             container.appendChild(div);
         });
+        renderIcones();
     }
 
     async function salvarRespostas(e) {
         e.preventDefault();
         const turmaSelecionada = document.getElementById('turma-responder').value;
         if (!turmaSelecionada) return alert("Selecione uma turma primeiro.");
-
         const msg = document.getElementById('prof-msg');
-        msg.innerText = "Salvando...";
-        msg.className = "msg msg-success";
-        msg.classList.remove('hidden');
+        msg.innerHTML = '<span class="loader"></span> Salvando...';
+        msg.className = "msg msg-success"; msg.classList.remove('hidden');
 
         const { data: perguntas } = await supabaseClient.from('perguntas').select('*').order('id');
 
         await supabaseClient.from('respostas').delete().eq('professor_id', usuarioLogado.id).eq('turma', turmaSelecionada);
+        await supabaseClient.from('votos_alunos').delete().eq('professor_id', usuarioLogado.id).eq('turma', turmaSelecionada);
 
-        const novasRespostas = perguntas.map(p => ({
-            professor_id: usuarioLogado.id,
-            professor_nome: usuarioLogado.nome,
-            turma: turmaSelecionada,
-            pergunta_id: p.id,
-            resposta: document.getElementById(`resp-${p.id}`).value.trim()
-        }));
+        const novasRespostas = [];
+        const novosVotos = [];
 
-        const { error } = await supabaseClient.from('respostas').insert(novasRespostas);
+        perguntas.forEach(p => {
+            if (ehPerguntaBons(p.texto) || ehPerguntaRuins(p.texto)) {
+                const tipo = ehPerguntaBons(p.texto) ? 'bom' : 'ruim';
+                const blocos = document.querySelectorAll(`.aluno-voto[data-tipo="${tipo}"]`);
+                blocos.forEach(bloco => {
+                    const checkbox = bloco.querySelector('input[type="checkbox"]');
+                    if (checkbox.checked) {
+                        novosVotos.push({
+                            professor_id: usuarioLogado.id,
+                            professor_nome: usuarioLogado.nome,
+                            turma: turmaSelecionada,
+                            aluno_id: parseInt(bloco.dataset.alunoId),
+                            tipo_voto: tipo
+                        });
+                    }
+                });
+            } else {
+                const textarea = document.getElementById(`resp-${p.id}`);
+                if (textarea) {
+                    novasRespostas.push({
+                        professor_id: usuarioLogado.id,
+                        professor_nome: usuarioLogado.nome,
+                        turma: turmaSelecionada,
+                        pergunta_id: p.id,
+                        resposta: textarea.value.trim()
+                    });
+                }
+            }
+        });
 
-        if (error) {
-            console.error(error);
-            msg.innerText = "Erro ao salvar as respostas.";
+        let erro = false;
+        if (novasRespostas.length > 0) {
+            const { error } = await supabaseClient.from('respostas').insert(novasRespostas);
+            if (error) erro = true;
+        }
+        if (novosVotos.length > 0) {
+            const { error } = await supabaseClient.from('votos_alunos').insert(novosVotos);
+            if (error) erro = true;
+        }
+
+        if (erro) {
+            msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro ao salvar.';
             msg.className = "msg msg-error";
         } else {
-            msg.innerText = `Respostas para ${turmaSelecionada} salvas com sucesso!`;
+            msg.innerHTML = `<i data-lucide="check-circle"></i> Respostas para ${turmaSelecionada} salvas com sucesso!`;
             msg.className = "msg msg-success";
         }
-        
+        renderIcones();
         setTimeout(() => { msg.classList.add('hidden'); }, 3500);
     }
 
@@ -707,10 +890,7 @@
         select.innerHTML = '<option value="Todas">Todas as Turmas</option>';
         if (usuarioLogado.turmas) {
             usuarioLogado.turmas.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.textContent = t;
-                select.appendChild(opt);
+                const opt = document.createElement('option'); opt.value = t; opt.textContent = t; select.appendChild(opt);
             });
         }
         if (valorAtual && valorAtual !== 'Todas') select.value = valorAtual;
@@ -719,68 +899,88 @@
     async function renderizarHistoricoProfessor() {
         const container = document.getElementById('historico-container');
         const filtro = document.getElementById('filtro-turma-prof').value;
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando histórico...</p>';
-
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando...</p>';
         let query = supabaseClient.from('respostas').select('*').eq('professor_id', usuarioLogado.id).order('data', { ascending: false });
         if (filtro !== 'Todas') query = query.eq('turma', filtro);
 
-        const [resRespostas, resPerguntas] = await Promise.all([
+        const [resRespostas, resPerguntas, resVotos, resAlunos] = await Promise.all([
             query,
-            supabaseClient.from('perguntas').select('*')
+            supabaseClient.from('perguntas').select('*'),
+            supabaseClient.from('votos_alunos').select('*').eq('professor_id', usuarioLogado.id),
+            supabaseClient.from('alunos').select('*')
         ]);
 
         const respostas = resRespostas.data || [];
         const perguntas = resPerguntas.data || [];
+        const votos = resVotos.data || [];
+        const alunos = resAlunos.data || [];
 
-        if (respostas.length === 0) {
+        if (respostas.length === 0 && votos.length === 0) {
             container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Você ainda não enviou nenhuma resposta.</p></div>';
             return;
         }
 
         const envios = {};
         respostas.forEach(r => {
-            const dataFormatada = new Date(r.data).toLocaleString();
+            const dataFormatada = new Date(r.data).toLocaleString('pt-BR');
             const chave = `${r.turma}||${dataFormatada}`;
-            if (!envios[chave]) envios[chave] = [];
-            envios[chave].push(r);
+            if (!envios[chave]) envios[chave] = { respostas: [], votos: [] };
+            envios[chave].respostas.push(r);
+        });
+        votos.forEach(v => {
+            const dataFormatada = new Date(v.data).toLocaleString('pt-BR');
+            const chave = `${v.turma}||${dataFormatada}`;
+            if (!envios[chave]) envios[chave] = { respostas: [], votos: [] };
+            envios[chave].votos.push(v);
         });
 
         container.innerHTML = '';
         Object.keys(envios).forEach(chave => {
             const [turma, data] = chave.split('||');
-            const listaRespostas = envios[chave];
+            const dados = envios[chave];
             const divBloco = document.createElement('div');
             divBloco.className = 'section-box';
-            
-            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 20px;">📋 Turma: ${turma} <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">— ${data}</span></h3>`;
+            let html = `<h3><i data-lucide="clipboard-check"></i> Turma: ${turma} <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500; margin-left: 8px;">— ${data}</span></h3>`;
 
-            listaRespostas.forEach(r => {
+            dados.respostas.forEach(r => {
                 const perguntaObj = perguntas.find(p => p.id === r.pergunta_id);
                 const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída]`;
-                html += `
-                    <div class="resposta-card">
-                        <div class="pergunta">${textoPergunta}</div>
-                        <div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div>
-                    </div>
-                `;
+                html += `<div class="resposta-card"><div class="pergunta">${textoPergunta}</div><div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div></div>`;
             });
+
+            const votosBons = dados.votos.filter(v => v.tipo_voto === 'bom');
+            const votosRuins = dados.votos.filter(v => v.tipo_voto === 'ruim');
+
+            if (votosBons.length > 0) {
+                html += `<div class="resposta-card" style="border-left-color: var(--accent);"><div class="pergunta" style="color: var(--accent);">Alunos votados como BONS</div><div class="resposta">`;
+                votosBons.forEach(v => {
+                    const aluno = alunos.find(a => a.id === v.aluno_id);
+                    if (aluno) html += `<div>✅ ${aluno.nome}</div>`;
+                });
+                html += `</div></div>`;
+            }
+            if (votosRuins.length > 0) {
+                html += `<div class="resposta-card" style="border-left-color: var(--danger);"><div class="pergunta" style="color: var(--danger);">Alunos votados como RUINS</div><div class="resposta">`;
+                votosRuins.forEach(v => {
+                    const aluno = alunos.find(a => a.id === v.aluno_id);
+                    if (aluno) html += `<div>⚠️ ${aluno.nome}</div>`;
+                });
+                html += `</div></div>`;
+            }
             divBloco.innerHTML = html;
             container.appendChild(divBloco);
         });
+        renderIcones();
     }
 
     function renderizarTurmasProfessor() {
         const container = document.getElementById('turmas-prof-container');
         container.innerHTML = '';
-
         TODAS_TURMAS.forEach(turma => {
             const ativa = usuarioLogado.turmas && usuarioLogado.turmas.includes(turma);
             const label = document.createElement('label');
             label.className = 'turma-checkbox' + (ativa ? ' ativa' : '');
-            label.innerHTML = `
-                <input type="checkbox" value="${turma}" ${ativa ? 'checked' : ''} onchange="this.parentElement.classList.toggle('ativa', this.checked)">
-                ${turma}
-            `;
+            label.innerHTML = `<input type="checkbox" value="${turma}" ${ativa ? 'checked' : ''} onchange="this.parentElement.classList.toggle('ativa', this.checked)"> ${turma}`;
             container.appendChild(label);
         });
     }
@@ -788,144 +988,241 @@
     async function salvarTurmasProfessor() {
         const checkboxes = document.querySelectorAll('#turmas-prof-container input[type="checkbox"]:checked');
         const turmasSelecionadas = Array.from(checkboxes).map(cb => cb.value);
-
-        const { error } = await supabaseClient
-            .from('usuarios')
-            .update({ turmas: turmasSelecionadas })
-            .eq('id', usuarioLogado.id);
-
-        if (error) {
-            console.error(error);
-            alert("Erro ao salvar turmas.");
-            return;
-        }
-
+        const { error } = await supabaseClient.from('usuarios').update({ turmas: turmasSelecionadas }).eq('id', usuarioLogado.id);
+        if (error) { alert("Erro ao salvar turmas."); return; }
         usuarioLogado.turmas = turmasSelecionadas;
         atualizarTagTurmasProfessor();
         alert("Turmas salvas com sucesso!");
     }
 
-    // ==========================================
-    // NAVEGAÇÃO DO ADMIN
-    // ==========================================
+    // ===================== ADMIN =====================
     async function mostrarAbaAdmin(abaId) {
         document.querySelectorAll('.aba-admin-content').forEach(aba => aba.classList.add('hidden'));
         document.getElementById('aba-' + abaId).classList.remove('hidden');
-        
-        document.querySelectorAll('.admin-controls button').forEach(btn => btn.className = 'btn-outline');
-        if(abaId === 'gerenciar-perguntas') document.getElementById('btn-aba-gerenciar').className = 'btn-primary aba-ativa';
-        if(abaId === 'cadastrar-prof') document.getElementById('btn-aba-cadastrar').className = 'btn-primary aba-ativa';
-        if(abaId === 'ver-respostas') document.getElementById('btn-aba-respostas').className = 'btn-primary aba-ativa';
-        if(abaId === 'estatisticas') document.getElementById('btn-aba-estatisticas').className = 'btn-primary aba-ativa';
-
+        const botoes = {
+            'gerenciar-perguntas': document.getElementById('btn-aba-gerenciar'),
+            'gerenciar-alunos': document.getElementById('btn-aba-alunos'),
+            'cadastrar-prof': document.getElementById('btn-aba-cadastrar'),
+            'ver-respostas': document.getElementById('btn-aba-respostas'),
+            'estatisticas': document.getElementById('btn-aba-estatisticas'),
+            'ranking': document.getElementById('btn-aba-ranking')
+        };
+        Object.keys(botoes).forEach(k => botoes[k].className = (k === abaId) ? 'aba-ativa' : '');
         if (abaId === 'gerenciar-perguntas') await renderizarPerguntasAdmin();
-        if (abaId === 'ver-respostas') {
-            await configurarFiltroProfessores();
-            await renderizarRespostasAdmin();
-        }
+        if (abaId === 'gerenciar-alunos') await renderizarAlunosAdmin();
+        if (abaId === 'ver-respostas') { await configurarFiltroProfessores(); await renderizarRespostasAdmin(); }
         if (abaId === 'estatisticas') await renderizarEstatisticas();
+        if (abaId === 'ranking') await renderizarRanking();
+        renderIcones();
     }
 
+    // --- Perguntas ---
     async function adicionarPergunta() {
         const texto = document.getElementById('nova-pergunta-texto').value.trim();
         if (!texto) return alert("Digite o texto da pergunta.");
-
         const { error } = await supabaseClient.from('perguntas').insert({ texto: texto });
-
-        if (error) {
-            console.error(error);
-            alert("Erro ao adicionar pergunta.");
-            return;
-        }
-
+        if (error) { alert("Erro ao adicionar."); return; }
         document.getElementById('nova-pergunta-texto').value = '';
         await renderizarPerguntasAdmin();
     }
 
     async function excluirPergunta(id) {
-        if (!confirm("Tem certeza que deseja excluir esta pergunta?")) return;
+        if (!confirm("Tem certeza que deseja excluir?")) return;
         const { error } = await supabaseClient.from('perguntas').delete().eq('id', id);
-        if (error) {
-            console.error(error);
-            alert("Erro ao excluir pergunta.");
-            return;
-        }
+        if (error) { alert("Erro ao excluir."); return; }
         await renderizarPerguntasAdmin();
     }
 
     async function renderizarPerguntasAdmin() {
         const container = document.getElementById('lista-perguntas-admin');
         container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando...</p>';
-
         const { data: perguntas, error } = await supabaseClient.from('perguntas').select('*').order('id');
-
-        if (error) {
-            container.innerHTML = '<p style="color: var(--danger);">Erro ao carregar perguntas.</p>';
-            return;
-        }
-
+        if (error) { container.innerHTML = '<p style="color: var(--danger);">Erro.</p>'; return; }
         container.innerHTML = '';
-
-        if (perguntas.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta cadastrada.</p>';
-            return;
-        }
-
+        if (perguntas.length === 0) { container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma pergunta.</p>'; return; }
         perguntas.forEach((p, i) => {
             const div = document.createElement('div');
             div.className = 'pergunta-item';
+            const especial = ehPerguntaBons(p.texto) || ehPerguntaRuins(p.texto);
             div.innerHTML = `
-                <span><strong>${i + 1}.</strong> ${p.texto}</span>
-                <div class="no-print">
-                    <button class="btn-danger btn-sm" onclick="excluirPergunta(${p.id})">Excluir</button>
-                </div>
+                <div class="num">${i + 1}</div>
+                <div class="texto">${p.texto} ${especial ? '<span style="display:inline-block; margin-left: 8px; font-size: 0.7rem; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 10px; font-weight: 700;">VOTAÇÃO</span>' : ''}</div>
+                <div class="no-print"><button class="btn-danger btn-sm" onclick="excluirPergunta(${p.id})"><i data-lucide="trash-2"></i> Excluir</button></div>
             `;
             container.appendChild(div);
         });
+        renderIcones();
     }
 
+    // --- Alunos ---
+    async function cadastrarAluno() {
+        const nome = document.getElementById('aluno-nome-cad').value.trim();
+        const turma = document.getElementById('aluno-turma-cad').value;
+        if (!nome) return alert("Digite o nome do aluno!");
+        const { error } = await supabaseClient.from('alunos').insert({ nome, turma });
+        if (error) { console.error(error); alert("Erro ao cadastrar aluno."); return; }
+        alert(`Aluno ${nome} cadastrado na turma ${turma}!`);
+        document.getElementById('aluno-nome-cad').value = '';
+        await renderizarAlunosAdmin();
+    }
+
+    async function excluirAluno(id) {
+        if (!confirm("Tem certeza que deseja excluir este aluno? Os votos relacionados também serão apagados.")) return;
+        await supabaseClient.from('votos_alunos').delete().eq('aluno_id', id);
+        const { error } = await supabaseClient.from('alunos').delete().eq('id', id);
+        if (error) { alert("Erro ao excluir."); return; }
+        await renderizarAlunosAdmin();
+    }
+
+    async function renderizarAlunosAdmin() {
+        const container = document.getElementById('lista-alunos-admin');
+        const filtro = document.getElementById('filtro-alunos-turma').value;
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando...</p>';
+        let query = supabaseClient.from('alunos').select('*').order('turma').order('nome');
+        if (filtro !== 'Todas') query = query.eq('turma', filtro);
+        const { data: alunos, error } = await query;
+        if (error) { container.innerHTML = '<p style="color: var(--danger);">Erro ao carregar.</p>'; return; }
+        container.innerHTML = '';
+        if (alunos.length === 0) { container.innerHTML = '<p style="color: var(--text-muted);">Nenhum aluno cadastrado.</p>'; return; }
+
+        const agrupado = {};
+        alunos.forEach(a => { if (!agrupado[a.turma]) agrupado[a.turma] = []; agrupado[a.turma].push(a); });
+
+        Object.keys(agrupado).sort().forEach(turma => {
+            const bloco = document.createElement('div');
+            bloco.style.marginBottom = '20px';
+            let html = `<h4 style="font-size: 0.95rem; color: var(--primary); margin-bottom: 10px;">📚 ${turma} <span style="color: var(--text-muted); font-weight: 500;">(${agrupado[turma].length} alunos)</span></h4>`;
+            agrupado[turma].forEach(a => {
+                html += `
+                    <div class="pergunta-item" style="padding: 12px 18px;">
+                        <div class="texto">${a.nome}</div>
+                        <button class="btn-danger btn-sm" onclick="excluirAluno(${a.id})"><i data-lucide="trash-2"></i></button>
+                    </div>
+                `;
+            });
+            bloco.innerHTML = html;
+            container.appendChild(bloco);
+        });
+        renderIcones();
+    }
+
+    // --- IMPORTAR PLANILHA (NOVO) ---
+    async function processarPlanilha(event) {
+        const arquivo = event.target.files[0];
+        if (!arquivo) return;
+
+        const preview = document.getElementById('preview-planilha');
+        preview.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Processando arquivo...</p>';
+
+        try {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const primeiraAba = workbook.SheetNames[0];
+                const planilha = workbook.Sheets[primeiraAba];
+                const linhas = XLSX.utils.sheet_to_json(planilha, { header: 1 });
+
+                if (linhas.length < 2) {
+                    preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> A planilha está vazia ou sem dados.</div>';
+                    renderIcones(); return;
+                }
+
+                // Detecta os índices das colunas Nome e Turma (cabeçalho)
+                const cabecalho = linhas[0].map(c => (c || '').toString().toLowerCase().trim());
+                const idxNome = cabecalho.findIndex(c => c.includes('nome') || c.includes('aluno'));
+                const idxTurma = cabecalho.findIndex(c => c.includes('turma') || c.includes('sala') || c.includes('classe'));
+
+                if (idxNome === -1 || idxTurma === -1) {
+                    preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> A planilha deve ter as colunas <strong>"Nome"</strong> e <strong>"Turma"</strong>.</div>';
+                    renderIcones(); return;
+                }
+
+                // Monta lista de alunos
+                const alunosParaCadastrar = [];
+                for (let i = 1; i < linhas.length; i++) {
+                    const nome = (linhas[i][idxNome] || '').toString().trim();
+                    const turma = (linhas[i][idxTurma] || '').toString().trim();
+                    if (nome && turma) {
+                        alunosParaCadastrar.push({ nome, turma });
+                    }
+                }
+
+                if (alunosParaCadastrar.length === 0) {
+                    preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> Nenhum aluno válido encontrado na planilha.</div>';
+                    renderIcones(); return;
+                }
+
+                // Mostra preview
+                let html = `
+                    <div class="msg msg-success"><i data-lucide="check-circle"></i> <strong>${alunosParaCadastrar.length} alunos</strong> encontrados na planilha. Deseja cadastrar todos?</div>
+                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 16px;">
+                        <table class="preview-tabela">
+                            <thead><tr><th>#</th><th>Nome</th><th>Turma</th></tr></thead>
+                            <tbody>
+                `;
+                alunosParaCadastrar.forEach((a, i) => {
+                    html += `<tr><td>${i + 1}</td><td>${a.nome}</td><td>${a.turma}</td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+                html += `<button class="btn-success" onclick='confirmarImportacao(${JSON.stringify(alunosParaCadastrar).replace(/'/g, "\\'")})'><i data-lucide="upload"></i> Confirmar Importação</button>`;
+                preview.innerHTML = html;
+                renderIcones();
+            };
+            reader.readAsArrayBuffer(arquivo);
+        } catch (err) {
+            console.error(err);
+            preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> Erro ao ler o arquivo: ' + err.message + '</div>';
+            renderIcones();
+        }
+    }
+
+    async function confirmarImportacao(alunos) {
+        if (!confirm(`Deseja realmente cadastrar ${alunos.length} alunos no banco de dados?`)) return;
+
+        const preview = document.getElementById('preview-planilha');
+        preview.innerHTML = '<p style="text-align:center; color: var(--text-muted);"><span class="loader" style="border-color: rgba(0,0,0,0.1); border-top-color: var(--primary);"></span> Cadastrando alunos...</p>';
+
+        const { error } = await supabaseClient.from('alunos').insert(alunos);
+
+        if (error) {
+            console.error(error);
+            preview.innerHTML = '<div class="msg msg-error"><i data-lucide="alert-circle"></i> Erro ao cadastrar: ' + error.message + '</div>';
+            renderIcones();
+            return;
+        }
+
+        preview.innerHTML = `<div class="msg msg-success"><i data-lucide="check-circle"></i> <strong>${alunos.length} alunos cadastrados com sucesso!</strong></div>`;
+        renderIcones();
+        await renderizarAlunosAdmin();
+        document.getElementById('arquivo-planilha').value = '';
+    }
+
+    // --- Cadastrar Professor ---
     async function cadastrarProfessor() {
         const nome = document.getElementById('prof-nome-cad').value.trim();
         const email = document.getElementById('prof-email-cad').value.trim();
         const senha = document.getElementById('prof-senha-cad').value.trim();
         const selectTurmas = document.getElementById('prof-turmas-cad');
         const turmas = Array.from(selectTurmas.selectedOptions).map(opt => opt.value);
-
-        if (!nome || !email || !senha) return alert("Preencha todos os campos obrigatórios!");
-        if (turmas.length === 0) return alert("Selecione pelo menos uma turma para o professor!");
-
-        const { error } = await supabaseClient.from('usuarios').insert({
-            nome, email, senha, tipo: 'professor', turmas
-        });
-
-        if (error) {
-            console.error(error);
-            alert("Erro ao cadastrar professor. Talvez o e-mail já esteja em uso.");
-            return;
-        }
-
-        alert(`Professor ${nome} cadastrado com sucesso!`);
+        if (!nome || !email || !senha) return alert("Preencha todos os campos!");
+        if (turmas.length === 0) return alert("Selecione pelo menos uma turma!");
+        const { error } = await supabaseClient.from('usuarios').insert({ nome, email, senha, tipo: 'professor', turmas });
+        if (error) { alert("Erro ao cadastrar. E-mail já em uso?"); return; }
+        alert(`Professor ${nome} cadastrado!`);
         document.getElementById('prof-nome-cad').value = '';
         document.getElementById('prof-email-cad').value = '';
         document.getElementById('prof-senha-cad').value = '';
         selectTurmas.selectedIndex = -1;
     }
 
+    // --- Ver Respostas ---
     async function configurarFiltroProfessores() {
         const select = document.getElementById('filtro-professor');
         const valorAtual = select.value;
         select.innerHTML = '<option value="Todos">Todos os Professores</option>';
-        
         const { data: usuarios } = await supabaseClient.from('usuarios').select('nome').eq('tipo', 'professor');
-        
-        if (usuarios) {
-            usuarios.forEach(u => {
-                const opt = document.createElement('option');
-                opt.value = u.nome;
-                opt.textContent = u.nome;
-                select.appendChild(opt);
-            });
-        }
+        if (usuarios) usuarios.forEach(u => { const opt = document.createElement('option'); opt.value = u.nome; opt.textContent = u.nome; select.appendChild(opt); });
         if (valorAtual && valorAtual !== 'Todos') select.value = valorAtual;
     }
 
@@ -933,154 +1230,229 @@
         const container = document.getElementById('respostas-container');
         const filtroTurma = document.getElementById('filtro-turma').value;
         const filtroProfessor = document.getElementById('filtro-professor').value;
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando respostas...</p>';
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando...</p>';
 
         let query = supabaseClient.from('respostas').select('*').order('data', { ascending: false });
         if (filtroTurma !== 'Todas') query = query.eq('turma', filtroTurma);
         if (filtroProfessor !== 'Todos') query = query.eq('professor_nome', filtroProfessor);
 
-        const [resRespostas, resPerguntas] = await Promise.all([
+        const [resRespostas, resPerguntas, resVotos, resAlunos] = await Promise.all([
             query,
-            supabaseClient.from('perguntas').select('*')
+            supabaseClient.from('perguntas').select('*'),
+            supabaseClient.from('votos_alunos').select('*'),
+            supabaseClient.from('alunos').select('*')
         ]);
 
         const respostas = resRespostas.data || [];
         const perguntas = resPerguntas.data || [];
+        const votos = resVotos.data || [];
+        const alunos = resAlunos.data || [];
 
-        if (respostas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta encontrada com os filtros selecionados.</p></div>';
+        if (respostas.length === 0 && votos.length === 0) {
+            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta encontrada.</p></div>';
             return;
         }
 
         container.innerHTML = '';
         const agrupado = {};
         respostas.forEach(r => {
-            const chave = `${r.professor_nome}||${r.turma}||${new Date(r.data).toLocaleString()}`;
-            if (!agrupado[chave]) agrupado[chave] = [];
-            agrupado[chave].push(r);
+            const chave = `${r.professor_nome}||${r.turma}||${new Date(r.data).toLocaleString('pt-BR')}`;
+            if (!agrupado[chave]) agrupado[chave] = { respostas: [], votos: [] };
+            agrupado[chave].respostas.push(r);
+        });
+        votos.forEach(v => {
+            const chave = `${v.professor_nome}||${v.turma}||${new Date(v.data).toLocaleString('pt-BR')}`;
+            if (!agrupado[chave]) agrupado[chave] = { respostas: [], votos: [] };
+            agrupado[chave].votos.push(v);
         });
 
-        for (const [chave, listaRespostas] of Object.entries(agrupado)) {
+        Object.entries(agrupado).forEach(([chave, dados]) => {
             const [professorNome, turma, data] = chave.split('||');
             const divBloco = document.createElement('div');
             divBloco.className = 'section-box';
-            
-            let html = `<h3 style="border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 20px;">👨‍🏫 ${professorNome} — <span style="color: var(--primary);">${turma}</span></h3>`;
-            html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Data de envio: ${data}</p>`;
+            let html = `<h3><i data-lucide="user"></i> ${professorNome} <span style="color: var(--primary); font-weight: 500;">— ${turma}</span></h3>`;
+            html += `<p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">Enviado em ${data}</p>`;
 
-            listaRespostas.forEach(r => {
+            dados.respostas.forEach(r => {
                 const perguntaObj = perguntas.find(p => p.id === r.pergunta_id);
                 const textoPergunta = perguntaObj ? perguntaObj.texto : `[Pergunta excluída]`;
-                html += `
-                    <div class="resposta-card">
-                        <div class="pergunta">${textoPergunta}</div>
-                        <div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div>
-                    </div>
-                `;
+                html += `<div class="resposta-card"><div class="pergunta">${textoPergunta}</div><div class="resposta">${r.resposta || '<em style="color: var(--text-muted);">Não respondido</em>'}</div></div>`;
             });
+
+            const bons = dados.votos.filter(v => v.tipo_voto === 'bom');
+            const ruins = dados.votos.filter(v => v.tipo_voto === 'ruim');
+            if (bons.length > 0) {
+                html += `<div class="resposta-card" style="border-left-color: var(--accent);"><div class="pergunta" style="color: var(--accent);">✅ Alunos BONS</div><div class="resposta">${bons.map(v => alunos.find(a => a.id === v.aluno_id)?.nome || '').filter(n => n).join(' • ')}</div></div>`;
+            }
+            if (ruins.length > 0) {
+                html += `<div class="resposta-card" style="border-left-color: var(--danger);"><div class="pergunta" style="color: var(--danger);">⚠️ Alunos RUINS</div><div class="resposta">${ruins.map(v => alunos.find(a => a.id === v.aluno_id)?.nome || '').filter(n => n).join(' • ')}</div></div>`;
+            }
             divBloco.innerHTML = html;
             container.appendChild(divBloco);
-        }
+        });
+        renderIcones();
     }
 
+    // --- Estatísticas ---
     function analisarTexto(texto) {
-        const textoLower = texto.toLowerCase();
-        let positivas = 0, negativas = 0;
-        PALAVRAS_POSITIVAS.forEach(p => { if (textoLower.includes(p)) positivas++; });
-        PALAVRAS_NEGATIVAS.forEach(p => { if (textoLower.includes(p)) negativas++; });
-        if (positivas === 0 && negativas === 0) return 'neutro';
-        if (positivas > negativas) return 'positivo';
-        if (negativas > positivas) return 'negativo';
+        const t = texto.toLowerCase();
+        let p = 0, n = 0;
+        PALAVRAS_POSITIVAS.forEach(x => { if (t.includes(x)) p++; });
+        PALAVRAS_NEGATIVAS.forEach(x => { if (t.includes(x)) n++; });
+        if (p === 0 && n === 0) return 'neutro';
+        if (p > n) return 'positivo';
+        if (n > p) return 'negativo';
         return 'neutro';
     }
 
     async function renderizarEstatisticas() {
         const container = document.getElementById('estatisticas-container');
         const filtroTurma = document.getElementById('filtro-turma-stats').value;
-        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Analisando respostas...</p>';
-
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Analisando...</p>';
         let query = supabaseClient.from('respostas').select('*');
         if (filtroTurma !== 'Todas') query = query.eq('turma', filtroTurma);
-
         const { data: respostas } = await query;
+        if (!respostas || respostas.length === 0) { container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta.</p></div>'; return; }
 
-        if (!respostas || respostas.length === 0) {
-            container.innerHTML = '<div class="section-box"><p style="color: var(--text-muted);">Nenhuma resposta encontrada para análise.</p></div>';
-            return;
-        }
-
-        let totalPositivos = 0, totalNegativos = 0, totalNeutros = 0;
-        const mencoesPorTurma = {};
-
+        let tP = 0, tN = 0, tNeu = 0;
+        const porTurma = {};
         respostas.forEach(r => {
             if (!r.resposta) return;
-            const analise = analisarTexto(r.resposta);
-            if (analise === 'positivo') totalPositivos++;
-            else if (analise === 'negativo') totalNegativos++;
-            else totalNeutros++;
-
-            if (!mencoesPorTurma[r.turma]) mencoesPorTurma[r.turma] = { positivas: 0, negativas: 0, neutras: 0, total: 0 };
-            mencoesPorTurma[r.turma].total++;
-            if (analise === 'positivo') mencoesPorTurma[r.turma].positivas++;
-            else if (analise === 'negativo') mencoesPorTurma[r.turma].negativas++;
-            else mencoesPorTurma[r.turma].neutras++;
+            const a = analisarTexto(r.resposta);
+            if (a === 'positivo') tP++; else if (a === 'negativo') tN++; else tNeu++;
+            if (!porTurma[r.turma]) porTurma[r.turma] = { p: 0, n: 0, neu: 0, total: 0 };
+            porTurma[r.turma].total++;
+            if (a === 'positivo') porTurma[r.turma].p++; else if (a === 'negativo') porTurma[r.turma].n++; else porTurma[r.turma].neu++;
         });
 
-        const totalGeral = totalPositivos + totalNegativos + totalNeutros;
-        const pctPositivo = totalGeral > 0 ? ((totalPositivos / totalGeral) * 100).toFixed(1) : 0;
-        const pctNegativo = totalGeral > 0 ? ((totalNegativos / totalGeral) * 100).toFixed(1) : 0;
-        const pctNeutro = totalGeral > 0 ? ((totalNeutros / totalGeral) * 100).toFixed(1) : 0;
+        const total = tP + tN + tNeu;
+        const pP = total > 0 ? ((tP / total) * 100).toFixed(1) : 0;
+        const pN = total > 0 ? ((tN / total) * 100).toFixed(1) : 0;
+        const pNeu = total > 0 ? ((tNeu / total) * 100).toFixed(1) : 0;
 
         let html = `
             <div class="section-box">
-                <h3>📊 Resumo Geral ${filtroTurma !== 'Todas' ? `- ${filtroTurma}` : ''}</h3>
-                <p class="descricao">Análise baseada em palavras-chave dos relatos dos professores.</p>
+                <h3><i data-lucide="pie-chart"></i> Resumo Geral</h3>
                 <div class="stats-grid">
-                    <div class="stat-card positivo">
-                        <div class="numero">${pctPositivo}%</div>
-                        <div class="label">Positivas</div>
-                        <div class="detalhe">${totalPositivos} de ${totalGeral} menções</div>
-                    </div>
-                    <div class="stat-card negativo">
-                        <div class="numero">${pctNegativo}%</div>
-                        <div class="label">Negativas</div>
-                        <div class="detalhe">${totalNegativos} de ${totalGeral} menções</div>
-                    </div>
-                    <div class="stat-card neutro">
-                        <div class="numero">${pctNeutro}%</div>
-                        <div class="label">Neutras</div>
-                        <div class="detalhe">${totalNeutros} de ${totalGeral} menções</div>
-                    </div>
+                    <div class="stat-card positivo"><div class="numero">${pP}%</div><div class="label">Positivas</div><div class="detalhe">${tP} de ${total}</div></div>
+                    <div class="stat-card negativo"><div class="numero">${pN}%</div><div class="label">Negativas</div><div class="detalhe">${tN} de ${total}</div></div>
+                    <div class="stat-card neutro"><div class="numero">${pNeu}%</div><div class="label">Neutras</div><div class="detalhe">${tNeu} de ${total}</div></div>
                 </div>
                 <div class="barra-progresso">
-                    ${pctPositivo > 0 ? `<div class="segmento positivo" style="width: ${pctPositivo}%;">${pctPositivo}%</div>` : ''}
-                    ${pctNegativo > 0 ? `<div class="segmento negativo" style="width: ${pctNegativo}%;">${pctNegativo}%</div>` : ''}
-                    ${pctNeutro > 0 ? `<div class="segmento neutro" style="width: ${pctNeutro}%;">${pctNeutro}%</div>` : ''}
+                    ${pP > 0 ? `<div class="segmento positivo" style="width: ${pP}%;">${pP}%</div>` : ''}
+                    ${pN > 0 ? `<div class="segmento negativo" style="width: ${pN}%;">${pN}%</div>` : ''}
+                    ${pNeu > 0 ? `<div class="segmento neutro" style="width: ${pNeu}%;">${pNeu}%</div>` : ''}
                 </div>
             </div>
             <div class="section-box">
-                <h3>📋 Análise por Turma</h3>
+                <h3><i data-lucide="bar-chart-2"></i> Análise por Turma</h3>
                 <div class="lista-mencoes">
         `;
-
-        Object.keys(mencoesPorTurma).sort().forEach(turma => {
-            const dados = mencoesPorTurma[turma];
-            const pctPos = dados.total > 0 ? ((dados.positivas / dados.total) * 100).toFixed(0) : 0;
-            const pctNeg = dados.total > 0 ? ((dados.negativas / dados.total) * 100).toFixed(0) : 0;
-            html += `
-                <div class="mencao-item">
-                    <span class="turma">${turma}</span>
-                    <div style="display: flex; gap: 8px;">
-                        <span class="badge positivo">✓ ${dados.positivas} positivas (${pctPos}%)</span>
-                        <span class="badge negativo">✗ ${dados.negativas} negativas (${pctNeg}%)</span>
-                    </div>
-                </div>
-            `;
+        Object.keys(porTurma).sort().forEach(turma => {
+            const d = porTurma[turma];
+            const pp = d.total > 0 ? ((d.p / d.total) * 100).toFixed(0) : 0;
+            const pn = d.total > 0 ? ((d.n / d.total) * 100).toFixed(0) : 0;
+            html += `<div class="mencao-item"><span class="turma">${turma}</span><div style="display:flex; gap:8px;"><span class="badge positivo">✓ ${d.p} (${pp}%)</span><span class="badge negativo">✗ ${d.n} (${pn}%)</span></div></div>`;
         });
-
         html += `</div></div>`;
         container.innerHTML = html;
+        renderIcones();
     }
+
+    // --- Ranking ---
+    async function renderizarRanking() {
+        const container = document.getElementById('ranking-container');
+        const filtroTurma = document.getElementById('filtro-ranking-turma').value;
+        const tipo = document.getElementById('filtro-ranking-tipo').value;
+        const titulo = document.getElementById('ranking-titulo');
+
+        titulo.innerHTML = tipo === 'bom'
+            ? '<i data-lucide="trophy"></i> 🏆 Alunos mais votados como BONS'
+            : '<i data-lucide="alert-triangle"></i> ⚠️ Alunos mais votados como RUINS';
+
+        container.innerHTML = '<p style="text-align:center; color: var(--text-muted);">Carregando ranking...</p>';
+
+        let query = supabaseClient.from('votos_alunos').select('*').eq('tipo_voto', tipo);
+        if (filtroTurma !== 'Todas') query = query.eq('turma', filtroTurma);
+
+        const [resVotos, resAlunos] = await Promise.all([
+            query,
+            supabaseClient.from('alunos').select('*')
+        ]);
+
+        const votos = resVotos.data || [];
+        const alunos = resAlunos.data || [];
+
+        if (votos.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 40px;">Nenhum voto registrado ainda.</p>';
+            return;
+        }
+
+        const contagem = {};
+        votos.forEach(v => {
+            if (!contagem[v.aluno_id]) contagem[v.aluno_id] = 0;
+            contagem[v.aluno_id]++;
+        });
+
+        const ranking = Object.entries(contagem)
+            .map(([alunoId, votos]) => {
+                const aluno = alunos.find(a => a.id === parseInt(alunoId));
+                return { nome: aluno?.nome || 'Aluno removido', turma: aluno?.turma || '', votos };
+            })
+            .sort((a, b) => b.votos - a.votos);
+
+        const maxVotos = ranking[0]?.votos || 1;
+
+        container.innerHTML = '';
+        ranking.forEach((item, i) => {
+            const posClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+            const pct = (item.votos / maxVotos) * 100;
+            const div = document.createElement('div');
+            div.className = 'ranking-item';
+            div.innerHTML = `
+                <div class="ranking-pos ${posClass}">${i + 1}</div>
+                <div class="ranking-info">
+                    <div class="ranking-nome">${item.nome} <span style="color: var(--text-muted); font-weight: 400; font-size: 0.85rem;">— ${item.turma}</span></div>
+                    <div class="ranking-barra"><div class="${tipo}" style="width: ${pct}%;"></div></div>
+                </div>
+                <div class="ranking-votos">${item.votos} ${item.votos === 1 ? 'voto' : 'votos'}</div>
+            `;
+            container.appendChild(div);
+        });
+        renderIcones();
+    }
+
+    // ===================== INICIALIZAÇÃO =====================
+    window.addEventListener('DOMContentLoaded', () => {
+        renderIcones();
+        // Configuração de drag and drop para upload
+        const uploadArea = document.getElementById('upload-area');
+        if (uploadArea) {
+            ['dragenter', 'dragover'].forEach(evt => {
+                uploadArea.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+            });
+            ['dragleave', 'drop'].forEach(evt => {
+                uploadArea.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                });
+            });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const arquivo = e.dataTransfer.files[0];
+                if (arquivo) {
+                    const input = document.getElementById('arquivo-planilha');
+                    const dt = new DataTransfer();
+                    dt.items.add(arquivo);
+                    input.files = dt.files;
+                    processarPlanilha({ target: input });
+                }
+            });
+        }
+    });
 </script>
 
 </body>
