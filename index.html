@@ -69,9 +69,8 @@
         .login-box .subtitulo { text-align: center; color: var(--text-muted); margin-bottom: 32px; font-size: 0.9rem; }
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); font-size: 0.875rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: all 0.2s ease; background: var(--bg-surface); color: var(--text-primary); }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-light); box-shadow: var(--shadow-focus); }
-        .form-group textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: all 0.2s ease; background: var(--bg-surface); color: var(--text-primary); }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-light); box-shadow: var(--shadow-focus); }
         .form-group select[multiple] { min-height: 130px; padding: 8px; }
         .form-group select[multiple] option { padding: 8px 12px; border-radius: 6px; margin-bottom: 2px; }
         .form-group select[multiple] option:checked { background: var(--primary) linear-gradient(0deg, var(--primary), var(--primary)); color: white; }
@@ -162,9 +161,55 @@
         .pergunta-item:hover { box-shadow: var(--shadow-sm); border-color: var(--primary-light); transform: translateX(4px); }
         .pergunta-item .num { width: 32px; height: 32px; border-radius: 10px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0; margin-right: 14px; }
         .pergunta-item .texto { flex: 1; font-size: 0.95rem; line-height: 1.5; }
-        .pergunta-bloco { margin-bottom: 20px; background: var(--bg-surface); padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border); border-left: 4px solid var(--primary); transition: all 0.2s ease; }
-        .pergunta-bloco:hover { box-shadow: var(--shadow-sm); border-left-color: var(--accent); }
-        .pergunta-bloco label { font-weight: 500; display: block; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.6; }
+        
+        /* ==================== ESTILO SÓLIDO DA PERGUNTA E TEXTAREA ==================== */
+        .pergunta-bloco { 
+            margin-bottom: 24px; 
+            background: var(--bg-surface); /* Fundo branco sólido */
+            padding: 28px; 
+            border-radius: var(--radius-md); 
+            border: 1.5px solid var(--border-strong); /* Borda mais escura */
+            border-left: 6px solid var(--primary); /* Borda azul mais grossa */
+            box-shadow: var(--shadow-sm); /* Leve sombra para dar volume */
+            transition: all 0.2s ease; 
+        }
+        .pergunta-bloco:hover { 
+            box-shadow: var(--shadow-md); 
+            border-color: var(--primary-light);
+            border-left-color: var(--accent); 
+        }
+        .pergunta-bloco label { 
+            font-weight: 600; 
+            display: block; 
+            margin-bottom: 16px; 
+            font-size: 1rem; 
+            line-height: 1.6; 
+            color: var(--text-primary);
+        }
+
+        /* Estilo específico da caixa de texto (textarea) */
+        .pergunta-bloco textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1.5px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background: var(--bg-subtle); /* Fundo levemente cinza para contrastar com o card branco */
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); /* Sombra interna */
+        }
+        .pergunta-bloco textarea:focus {
+            outline: none;
+            background: var(--bg-surface); /* Fica branco puro ao clicar */
+            border-color: var(--primary);
+            box-shadow: var(--shadow-focus);
+        }
+        
         .hidden { display: none !important; }
         .msg { padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 20px; font-weight: 500; font-size: 0.875rem; display: flex; align-items: center; gap: 10px; }
         .msg svg { width: 18px; height: 18px; flex-shrink: 0; }
@@ -209,7 +254,7 @@
         .loader { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .alunos-votacao { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; margin-top: 12px; }
-        .aluno-voto { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s ease; user-select: none; font-size: 0.9rem; }
+        .aluno-voto { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--bg-surface); border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s ease; user-select: none; font-size: 0.9rem; }
         .aluno-voto:hover { border-color: var(--primary-light); }
         .aluno-voto.bom { border-color: var(--accent); background: var(--accent-soft); color: #065f46; font-weight: 600; }
         .aluno-voto.ruim { border-color: var(--danger); background: var(--danger-soft); color: #991b1b; font-weight: 600; }
@@ -620,7 +665,7 @@
 
 <script>
     // ===================== SUPABASE =====================
-    const SUPABASE_URL = 'https://dzvdjfahthbieuyhktzm.supabase.co';
+    const SUPABASE_URL = 'https://dzvdjfahthbieuyhkztm.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6dmRqZmFodGhiaWV1eWhrdHptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDMyMTIsImV4cCI6MjEwNzcxOTIxMn0.CSCNC0Ui_n5pNEhIBbY-g2V8fWPpPB0IIljUHOMv68w';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -813,7 +858,7 @@
                     div.innerHTML = html;
                 }
             } else {
-                div.innerHTML = `<label>${p.texto}</label><textarea id="resp-${p.id}" rows="4" placeholder="Digite sua resposta...">${valor}</textarea>`;
+                div.innerHTML = `<label>${p.texto}</label><textarea id="resp-${p.id}" rows="5" placeholder="Digite sua resposta aqui...">${valor}</textarea>`;
             }
             container.appendChild(div);
         });
@@ -879,18 +924,15 @@
         if (erro) {
             msg.innerHTML = '<i data-lucide="alert-circle"></i> Erro ao salvar. Tente novamente.';
             msg.className = "msg msg-error";
-            // Rola para o topo imediatamente
             window.scrollTo(0, 0);
         } else {
             msg.innerHTML = `<i data-lucide="check-circle"></i> <strong>Sucesso!</strong> Respostas para ${turmaSelecionada} foram enviadas.`;
             msg.className = "msg msg-success";
-            // Rola para o topo imediatamente
             window.scrollTo(0, 0);
             
-            // Efeito visual para chamar atenção
             msg.style.transition = 'all 0.3s ease';
             msg.style.transform = 'scale(1.02)';
-            msg.style.boxShadow = '0 10px 15px -3px rgba(5, 150, 105, 0.3)'; // Sombra verde
+            msg.style.boxShadow = '0 10px 15px -3px rgba(5, 150, 105, 0.3)';
             
             setTimeout(() => { 
                 msg.style.transform = 'scale(1)'; 
@@ -898,7 +940,6 @@
             }, 400);
         }
         renderIcones();
-        // A mensagem some depois de 5 segundos
         setTimeout(() => { msg.classList.add('hidden'); }, 5000);
     }
 
